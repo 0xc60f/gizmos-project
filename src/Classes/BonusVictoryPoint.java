@@ -2,6 +2,7 @@ package Classes;
 
 /**
  * A class which represents a Victory Point earned through a build. These are cards in the actual game.
+ * @author Joey
  */
 public class BonusVictoryPoint {
     private final int value;
