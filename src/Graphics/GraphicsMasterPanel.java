@@ -1,2 +1,4 @@
-package Graphics;public class GraphicsMasterPanel {
+package Graphics;
+
+public class GraphicsMasterPanel {
 }
