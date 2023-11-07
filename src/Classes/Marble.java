@@ -2,6 +2,7 @@ package Classes;
 
 /**
  * A class which represents a marble. This is used to hold the color of the marble.
+ * @author Joey
  */
 public class Marble {
     private MarbleColor color;
