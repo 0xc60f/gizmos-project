@@ -23,7 +23,7 @@ public class GraphicsMasterPanel extends JPanel{
     public void paint(Graphics g){
         super.paint(g);;
         //switch(choice){
-            /*case 1: */g.drawImage(start, 0, 0, 1366, 768, null);
+            /*case 1: */g.drawImage(start, 0, 0, 1600, 900, null);
        // }
     }
 }
