@@ -12,10 +12,10 @@ public class GraphicsMasterPanel extends JPanel{
     private int choice;
     public GraphicsMasterPanel(){
         try{
-            start = ImageIO.read(Objects.requireNonNull(GraphicsMasterPanel.class.getResource("/Images/Screens/Start(Final V).jpg")));
+            start = ImageIO.read(Objects.requireNonNull(GraphicsMasterPanel.class.getResource("/Images/Screens/StartScreen.jpg")));
         }
         catch (Exception e){
-            System.out.println("Exception Error");
+            System.out.println(e.getMessage());
             return;
         }
         //addKeyListener(this);
