@@ -8,8 +8,9 @@ import javax.swing.*;
 public class GraphicsFrame extends JFrame {
     public GraphicsFrame() {
         super("Gizmos");
-        setSize(1920, 1080);
+        setSize(1366, 768);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        add(new GraphicsMasterPanel());
         setVisible(true);
     }
 }
