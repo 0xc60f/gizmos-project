@@ -32,12 +32,24 @@ public class EnergyDispenser
     }
 
     /**
-     * Adds a marble to the dispenser.
+     * Gets a random marble from the dispenser and removes it from the dispenser. This is used for when a player is picking a marble from the top of the dispenser.
+     * @see Player
+     * @see Marble
+     * @return A random marble from the dispenser.
+     */
+    public Marble getRandMarble()
+    {
+        return marbles.remove((int) (Math.random() * marbles.size()));
+    }
+
+    /**
+     * Adds a marble to the dispenser and shuffles the marbles in the dispenser.
      * @param m The marble to add to the dispenser.
      */
     public void addMarble(Marble m)
     {
         marbles.add(m);
+        Collections.shuffle(marbles);
     }
 
     /**

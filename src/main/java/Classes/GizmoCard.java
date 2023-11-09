@@ -1,7 +1,5 @@
 package Classes;
 
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Native;
 import java.util.HashMap;
 
 /**
