@@ -6,7 +6,6 @@ import java.awt.event.MouseListener;
 import java.awt.image.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.io.*;
 import java.util.Objects;
 
 public class GraphicsMasterPanel extends JPanel implements MouseListener {
@@ -37,7 +36,6 @@ public class GraphicsMasterPanel extends JPanel implements MouseListener {
         int y = e.getY();
         if (x >= 0 && x <= 409 && y >= 0 && y <= 171){
             System.out.println("Downloaded Rules");
-            downloadRules();
         }
     }
 
@@ -60,15 +58,5 @@ public class GraphicsMasterPanel extends JPanel implements MouseListener {
     public void mouseExited(MouseEvent e) {
 
     }
-    private void downloadRules(){
-        if (Desktop.isDesktopSupported()) {
-            try {
-                File instructions = new File("GizmosRules.pdf");
-                Desktop.getDesktop().open(instructions);
-            }
-            catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
+
 }

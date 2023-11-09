@@ -1,7 +1,6 @@
 package Classes.GizmoCards;
 
 import Classes.*;
-import java.util.HashMap;
 
 /**
  * The first card that every player gets when they start the game. This is a file card, which means that it is a card that allows for picking.

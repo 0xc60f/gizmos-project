@@ -1,10 +1,8 @@
 package Logic;
 
-import java.util.ArrayList;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
+import java.util.stream.IntStream;
+
 import Classes.*;
 
 public class Game
@@ -21,10 +19,9 @@ public class Game
     public Game()
     {
         playerList = new ArrayList<Player>();
-        for (int i = 1; i <= 4; i++)
-            playerList.add(new Player(i));
+        IntStream.rangeClosed(1, 4).forEach(i -> playerList.add(new Player(i)));
         deck = new Deck();
-        currentPlayer = playerList.get(0); //not sure of
+        currentPlayer = playerList.get(determineFirstPlayer()); //not sure of
         gameEnd = false;
         gameStart = true;
         energyDispenser = new EnergyDispenser();
@@ -39,9 +36,13 @@ public class Game
 
     }
 
-    public int determineFirstPlayer()
-    {
-
+    /**
+     * SHuffles the ArrayList with players and returns the first player to determine
+     * the first player to start the round
+     */
+    public int determineFirstPlayer() {
+        Collections.shuffle(playerList);
+        return playerList.get(0).getPlayerNumber();
     }
 
     /**
@@ -49,12 +50,7 @@ public class Game
      */
     public ArrayList<Integer> calculateScores()
     {
-
-    }
-
-    public int determinePlayerOrder()
-    {
-
+        return null;
     }
 
     /**
@@ -62,7 +58,23 @@ public class Game
      */
     public Player getCurrentPlayer()
     {
+        return currentPlayer;
+    }
 
+    /**
+     This method sets the order and returns the current player, and if its the last player
+     then it starts back to 1 and will go through 1-4
+     */
+    public int setNextPlayer()
+    {
+        int currentPlayerNum = currentPlayer.getPlayerNumber();
+        if (currentPlayerNum == 4)
+        {
+            currentPlayerNum = 1;
+            return currentPlayerNum;
+        }
+        currentPlayerNum++;
+        return currentPlayerNum;
     }
 
     /**
@@ -71,7 +83,7 @@ public class Game
      */
     public ArrayList<Player> endGame()
     {
-
+        return null;
     }
 
 }
