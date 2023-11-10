@@ -106,4 +106,11 @@ public class EnergyDispenser
         yCoord = y;
     }
 
+    /**
+     * Checks to see if the energy dispenser has no marbles left.
+     * @return <code>true</code> if the dispenser is empty, <code>false</code> otherwise.
+     */
+    public boolean isEmpty() {
+        return marbles.isEmpty();
+    }
 }

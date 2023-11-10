@@ -1,6 +1,7 @@
 package Classes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
 public class Player implements Comparable<Player>
@@ -265,5 +266,13 @@ public class Player implements Comparable<Player>
     @Override
     public int compareTo(Player o) {
         return playerNumber - o.playerNumber;
+    }
+
+    /**
+     * Gets the player's energy ring.
+     * @return The player's energy ring as an <code>ArrayList</code> of <code>Marble</code>s.
+     */
+    public ArrayList<Marble> getEnergyRing() {
+        return energyRing;
     }
 }
