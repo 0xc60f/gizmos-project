@@ -75,4 +75,20 @@ public class Deck {
         return cardList;
     }
 
+    /**
+     * Checks to see if the given level is empty.
+     * @param level The level to check as a <code>GizmoLevel</code> enum.
+     * @return <code>true</code> if the level is empty, <code>false</code> otherwise.
+     */
+    public boolean isLevelEmpty(GizmoLevel level) {
+        return cards.get(level).isEmpty();
+    }
+
+    /**
+     * Checks to see if the deck is empty.
+     * @return <code>true</code> if the deck is empty, <code>false</code> otherwise.
+     */
+    public boolean isDeckEmpty() {
+        return cards.get(GizmoLevel.LEVEL1).isEmpty() && cards.get(GizmoLevel.LEVEL2).isEmpty() && cards.get(GizmoLevel.LEVEL3).isEmpty();
+    }
 }
