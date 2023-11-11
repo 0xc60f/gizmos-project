@@ -1,5 +1,6 @@
 package Graphics;
 
+import Logic.Game;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -15,6 +16,7 @@ import java.util.Objects;
 public class GraphicsMasterPanel extends JPanel implements MouseListener {
     private BufferedImage start;
     private int choice;
+    private Game game;
     public GraphicsMasterPanel(){
         try{
             start = ImageIO.read(Objects.requireNonNull(GraphicsMasterPanel.class.getResource("/Images/Screens/StartScreen.jpg")));

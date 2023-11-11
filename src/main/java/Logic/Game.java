@@ -1,25 +1,27 @@
 package Logic;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import Classes.*;
 
 public class Game
 {
-    private ArrayList<Player> playerList;
-    private Deck deck;
+    private final ArrayList<Player> playerList;
+    private final Deck deck;
     private Player currentPlayer;
-    private Player firstPlayer;
-    private boolean gameEnd, gameStart;
-    private EnergyDispenser energyDispenser;
+    private final Player firstPlayer;
+    private final boolean gameEnd;
+    private final boolean gameStart;
+    private final EnergyDispenser energyDispenser;
 
     /**
      * instantiates all attributes related to the game
      */
     public Game()
     {
-        playerList = new ArrayList<Player>();
+        playerList = new ArrayList<>();
         IntStream.rangeClosed(1, 4).forEach(i -> playerList.add(new Player(i)));
         deck = new Deck();
         currentPlayer = playerList.get(0); //not sure of
@@ -31,10 +33,14 @@ public class Game
     }
 
     /**
-     * Is the main game loop that runs the entire game
+     * runs the player's turn
      */
-    public void play()
+    public void play(Player p)
     {
+        if (endGameConditions() == true)
+        {
+            int playerNum = p.getPlayerNumber();
+        }
 
     }
 
@@ -50,14 +56,13 @@ public class Game
      This method sets the order and returns the current player, and if its the last player
      then it starts back to 1 and will go through 1-4
      */
-    public int setNextPlayer()
+    public void setNextPlayer()
     {
-        int currentPlayerNum = currentPlayer.getPlayerNumber();
-        return (currentPlayerNum + 1) % 4;
+        currentPlayer = playerList.get((playerList.indexOf(currentPlayer) + 1) % playerList.size());
     }
 
     /**
-     * What happens after the game ends, calls the calculate scores method, and returns an arrayList of the ranking
+     * What happens after the game ends, calls the calculate scores method, and returns an arrayList of the ranking, and tiebreakers
      */
     public ArrayList<Player> endGame()
     {
@@ -123,13 +128,24 @@ public class Game
      */
     public boolean endGameConditions()
     {
-        //Check all players and their cards. Return true if any player has at least fourc ards where the GizmoLevel is LEVEL3
-        if (playerList.stream().anyMatch(player -> player.getToolBar().getCards().values().stream().filter(cardList -> cardList.size() >= 4).anyMatch(cardList -> cardList.get(0).getLevel() == GizmoLevel.LEVEL3)))
-            return true;
-        if (deck.isDeckEmpty()) return true;
-        if (energyDispenser.isEmpty()) return true;
-        return playerList.stream().anyMatch(player -> player.getToolBar().getCards().values().stream().mapToInt(ArrayList::size).sum() >= 16);
-
+        //Check all players and their cards. Return true if any player has at least four cards where the GizmoLevel is LEVEL3
+        for (Player p : playerList) {
+            Toolbar playerToolbar = p.getToolBar();
+            //The getCards method returns a treemap of arraylists of gizmocards. Use streams to accumulate all the values in all of the arraylists into one arraylist
+            ArrayList<GizmoCard> allCards = playerToolbar.getCards().values().stream().flatMap(Collection::stream).collect(Collectors.toCollection(ArrayList::new));
+            if (allCards.size() >= 16) return true;
+        }
+        if (deck.isDeckEmpty() || energyDispenser.isEmpty()) return true;
+        for (Player p : playerList) {
+            Toolbar playerToolbar = p.getToolBar();
+            ArrayList<GizmoCard> allCards = new ArrayList<>();
+            for (ArrayList<GizmoCard> gizmoCards : playerToolbar.getCards().values()) {
+                allCards.addAll(gizmoCards);
+            }
+            int numlevel3 = (int) allCards.stream().filter(c -> c.getLevel().equals(GizmoLevel.LEVEL3)).count();
+            if (numlevel3 >= 4) return true;
+        }
+        return false;
     }
 
 }
