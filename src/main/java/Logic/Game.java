@@ -37,10 +37,6 @@ public class Game
      */
     public void play(Player p)
     {
-        if (endGameConditions() == true)
-        {
-            int playerNum = p.getPlayerNumber();
-        }
 
     }
 

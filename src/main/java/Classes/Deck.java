@@ -25,9 +25,9 @@ public class Deck {
         tier1 = new GizmoCard[4];
         tier2 = new GizmoCard[3];
         tier3 = new GizmoCard[2];
-        IntStream.range(0, 4).forEach(i -> tier1[i] = cards.get(GizmoLevel.LEVEL1).pop());
-        IntStream.range(0, 3).forEach(i -> tier2[i] = cards.get(GizmoLevel.LEVEL2).pop());
-        IntStream.range(0, 2).forEach(i -> tier3[i] = cards.get(GizmoLevel.LEVEL3).pop());
+//        IntStream.range(0, 4).forEach(i -> tier1[i] = cards.get(GizmoLevel.LEVEL1).pop());
+//        IntStream.range(0, 3).forEach(i -> tier2[i] = cards.get(GizmoLevel.LEVEL2).pop());
+//        IntStream.range(0, 2).forEach(i -> tier3[i] = cards.get(GizmoLevel.LEVEL3).pop());
 
     }
 
@@ -90,5 +90,30 @@ public class Deck {
      */
     public boolean isDeckEmpty() {
         return cards.get(GizmoLevel.LEVEL1).isEmpty() && cards.get(GizmoLevel.LEVEL2).isEmpty() && cards.get(GizmoLevel.LEVEL3).isEmpty();
+    }
+
+
+    /**
+     * returns the tier1 cards on the field
+     */
+    public GizmoCard[] getTier1()
+    {
+        return tier1;
+    }
+
+    /**
+     * returns the tier2 cards on the field
+     */
+    public GizmoCard[] getTier2()
+    {
+        return tier2;
+    }
+
+    /**
+     * returns the tier3 cards on the field
+     */
+    public GizmoCard[] getTier3()
+    {
+        return tier3;
     }
 }
