@@ -1,6 +1,7 @@
 package Classes;
 
 import java.awt.image.BufferedImage;
+import java.nio.Buffer;
 import java.util.HashMap;
 
 /**
@@ -11,9 +12,11 @@ import java.util.HashMap;
  */
 public class GizmoCard implements Card, CardEffect {
     private final HashMap<Marble, Integer> cost;
-    private int imageNumber, effectNumber;
+    private int effectNumber;
     private int numOfVictoryPts;
-    private String category, effectType;
+    private String effectType;
+    private GizmoType category;
+    private BufferedImage image;
 
     /**
      * Creates a GizmoCard with the given cost.
@@ -25,14 +28,14 @@ public class GizmoCard implements Card, CardEffect {
      * @param effectNum the method number in that effectTypeClass
      * @param image number of the image in our folder of all images starting from 1
      */
-    public GizmoCard(Marble typeMarble, int cost, int numOfVictoryPts, String category, String effectType, int effectNum, int image) {
+    public GizmoCard(Marble typeMarble, int cost, int numOfVictoryPts, GizmoType category, String effectType, int effectNum, BufferedImage image) {
         this.cost = new HashMap<>();
         this.cost.put(typeMarble, cost);
         this.numOfVictoryPts = numOfVictoryPts;
         this.category = category;
         this.effectType = effectType;
         effectNumber = effectNum;
-        imageNumber = image;
+        this.image = image;
     }
 
     /**
@@ -72,16 +75,16 @@ public class GizmoCard implements Card, CardEffect {
      * Gets the image of the GizmoCard.
      * @return The image of the GizmoCard as a <code>BufferedImage</code>.
      */
-    public int getImage() {
-        return imageNumber;
+    public BufferedImage getImage() {
+        return image;
     }
 
     /**
      * Sets the image of the GizmoCard.
      * @param image The image of the GizmoCard as a <code>BufferedImage</code>.
      */
-    public void setImage(int image) {
-        imageNumber = image;
+    public void setImage(BufferedImage image) {
+        this.image = image;
     }
 
     public HashMap<Marble, Integer> getCost() {
