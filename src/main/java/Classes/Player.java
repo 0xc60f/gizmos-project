@@ -137,7 +137,6 @@ public class Player implements Comparable<Player>
         return energyDispenser;
     }
 
-
     /**
      * Checks if player has enough energy to build the gizmo and if so calls the toolbar method addGizmo();
      * @param numOfRed			number of red energy needed to build the gizmo

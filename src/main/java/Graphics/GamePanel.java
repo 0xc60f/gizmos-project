@@ -47,7 +47,7 @@ public class GamePanel extends JPanel implements MouseListener
 
         playerList = new ArrayList<>();
         IntStream.rangeClosed(1, 4).forEach(i -> playerList.add(new Player(i)));
-        deck = new Deck();
+//        deck = new Deck(); error with exception
         currentPlayer = playerList.get(0); //not sure of
         firstPlayer = playerList.get(0);
         gameEnd = false;
