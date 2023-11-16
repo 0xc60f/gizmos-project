@@ -1,7 +1,7 @@
 package Graphics;
 
 import Classes.*;
-import Logic.Game;
+
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class GraphicsMasterPanel extends JPanel implements MouseListener
+public class GamePanel extends JPanel implements MouseListener
 {
     private BufferedImage start;
     private int choice;
@@ -28,15 +28,16 @@ public class GraphicsMasterPanel extends JPanel implements MouseListener
     private boolean gameStart;
     private EnergyDispenser energyDispenser;
     private String prompt;
-    private boolean fileButtonVisible, pickButtonVisible, buildButtonVisible, researchButtonVisible, endTurnButtonVisible;
-    private boolean fileButtonClicked, pickButtonClicked, buildButtonClicked, researchButtonClicked, endTurnButtonClicked;
-    private int card1, card2, card3, card4, card5, card6, card7, card8, card9;
+    private boolean fileButtonVisible, pickButtonVisible, buildButtonVisible, researchButtonVisible, endTurnButtonVisible, fieldButtonVisible, archiveButtonVisible;
+    private boolean fileButtonClicked, pickButtonClicked, buildButtonClicked, researchButtonClicked, endTurnButtonClicked, fieldButtonClicked, archiveButtonClicked;
+    private boolean marble1Clicked, marble2Clicked, marble3Clicked, marble4Clicked, marble5Clicked, marble6Clicked;
     private boolean card1Clicked, card2Clicked, card3Clicked, card4Clicked, card5Clicked, card6Clicked, card7Clicked, card8Clicked, card9Clicked;
-    public GraphicsMasterPanel()
+    private boolean tier1DeckClicked, tier2DeckClicked, tier3DeckClicked;
+    public GamePanel()
     {
         try
         {
-            start = ImageIO.read(Objects.requireNonNull(GraphicsMasterPanel.class.getResource("/Images/Screens/StartScreen.jpg")));
+            start = ImageIO.read(Objects.requireNonNull(GamePanel.class.getResource("/Images/Screens/StartScreen.jpg")));
         }
         catch (Exception e){
             System.out.println(e.getMessage());
@@ -52,10 +53,11 @@ public class GraphicsMasterPanel extends JPanel implements MouseListener
         gameEnd = false;
         gameStart = true;
         energyDispenser = new EnergyDispenser();
-        fileButtonVisible = false; pickButtonVisible = false; buildButtonVisible = false; researchButtonVisible = false; endTurnButtonVisible = false;
-        fileButtonClicked = false; pickButtonClicked = false; buildButtonClicked = false; researchButtonClicked = false; endTurnButtonClicked = false;
-        card1 = 1; card2 = 2; card3 = 3; card4 = 4; card5 = 5; card6 = 6; card7 = 7; card8 = 8; card9 = 9;
+        fileButtonVisible = false; pickButtonVisible = false; buildButtonVisible = false; researchButtonVisible = false; endTurnButtonVisible = false; fieldButtonVisible = false; archiveButtonVisible = false;
+        fileButtonClicked = false; pickButtonClicked = false; buildButtonClicked = false; researchButtonClicked = false; endTurnButtonClicked = false; fieldButtonClicked = false; archiveButtonClicked = false;
+        marble1Clicked = false; marble2Clicked = false; marble3Clicked = false; marble4Clicked = false; marble5Clicked = false; marble6Clicked = false;
         card1Clicked = false; card2Clicked = false; card3Clicked = false; card4Clicked = false; card5Clicked = false; card6Clicked = false; card7Clicked = false; card8Clicked = false; card9Clicked = false;
+        tier1DeckClicked = false; tier2DeckClicked = false; tier3DeckClicked = false;
     }
 
     /**
@@ -84,12 +86,46 @@ public class GraphicsMasterPanel extends JPanel implements MouseListener
                 setPrompt("Please choose a card on the field to file:");
                 //wait for player input, will write code later
 
+                int num = getCardNumberPicked();
+                p.file(pickedCard(num));
+            }
+            else if (pickButtonClicked == true)
+            {
+                setPrompt("Please choose marble from the energy dispenser to add to your ring:");
+                //wait for player input, will write code later
+                int num = getMarbleNumberPicked();
+                p.pickFrom6(num, energyDispenser.getFirstSix());
+            }
+            else if (buildButtonClicked == true)
+            {
+                setPrompt("Please choose a card from the field or your archive to build:");
+                //wait for player input to pick either field or archive, will write code later
+
+                if (fieldButtonClicked == true)
+                {
+                    setPrompt("Please choose a card from the field to build:");
+                    //wait for player input to pick either field or archive, will write code later
+
+                    int num = getCardNumberPicked();
+                    EnergyRing temp = p.getPlayerRingClass();
+                    p.build(temp.getNumOfRed(), temp.getNumOfBlue(), temp.getNumOfYellow(), temp.getNumOfBlack(), pickedCard(num));
+                }
+                else if (archiveButtonClicked == true)
+                {
+
+                }
+            }
+            else if (researchButtonClicked == true)
+            {
+                setPrompt("Please choose a tier of cards to research from");
+                //wait for player input to pick either field or archive, will write code later
+
 
             }
 
-            int playerNum = p.getPlayerNumber();
         }
     }
+
 
     /**
      * returns the currentPlayer
@@ -190,6 +226,33 @@ public class GraphicsMasterPanel extends JPanel implements MouseListener
         return false;
     }
 
+    /**
+     * @return the number of the card that the player picked. the boolean card_clicked is set to true in the mouseListener
+     */
+    public int getCardNumberPicked()
+    {
+        if (card1Clicked == true)
+            return 1;
+        else if (card2Clicked == true)
+            return 2;
+        else if (card3Clicked == true)
+            return 3;
+        else if (card4Clicked == true)
+            return 4;
+        else if (card5Clicked == true)
+            return 5;
+        else if (card6Clicked == true)
+            return 6;
+        else if (card7Clicked == true)
+            return 7;
+        else if (card8Clicked == true)
+            return 8;
+        else if (card9Clicked == true)
+            return 9;
+        return 1;
+    }
+
+
     public GizmoCard pickedCard(int cardClicked)
     {
         switch (cardClicked)
@@ -201,12 +264,46 @@ public class GraphicsMasterPanel extends JPanel implements MouseListener
             case 5: return deck.getTier2()[0];
             case 6: return deck.getTier2()[1];
             case 7: return deck.getTier2()[2];
-            case 8: return deck.getTier3()[1];
+            case 8: return deck.getTier3()[0];
             case 9: return deck.getTier3()[1];
         }
         return deck.getTier1()[0];
     }
 
+    public int getMarbleNumberPicked()
+    {
+        if (marble1Clicked == true)
+            return 1;
+        else if (marble2Clicked == true)
+            return 2;
+        else if (marble3Clicked == true)
+            return 3;
+        else if (marble4Clicked == true)
+            return 4;
+        else if (marble5Clicked == true)
+            return 5;
+        else if (marble6Clicked == true)
+            return 6;
+        return 1;
+    }
+//
+//    /**
+//     * @param marbleClicked the number of the marble clicked starting with 1 at the top to 6 at the bottom
+//     * @return the marble that the player clicked, if for some reason is none of the cases just returns 1st marble
+//     */
+//    public Marble pickedMarble(int marbleClicked)
+//    {
+//        switch (marbleClicked)
+//        {
+//            case 1: return energyDispenser.getFirstSix().get(0);
+//            case 2: return energyDispenser.getFirstSix().get(1);
+//            case 3: return energyDispenser.getFirstSix().get(2);
+//            case 4: return energyDispenser.getFirstSix().get(3);
+//            case 5: return energyDispenser.getFirstSix().get(4);
+//            case 6: return energyDispenser.getFirstSix().get(5);
+//        }
+//        return energyDispenser.getFirstSix().get(0);
+//    }
 
     public void paint(Graphics g)
     {
@@ -263,6 +360,10 @@ public class GraphicsMasterPanel extends JPanel implements MouseListener
             System.out.println("Game Started!");
             gameStart = true;
         }
+        // player clicks on card to file from the 3 tiers
+        // player clicks on 4 buttons
+        // after player clicks on build, show two buttons: field and archive and allow player to choose one
+        // player clicks on one of the 3 tiers and then clicks on a card to research
 
     }
 

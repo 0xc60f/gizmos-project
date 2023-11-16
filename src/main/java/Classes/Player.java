@@ -7,7 +7,7 @@ import java.util.Random;
 public class Player implements Comparable<Player>
 {
     ArrayList<BonusVictoryPoint> victoryPoints;
-    ArrayList<Marble> energyRing;
+    EnergyRing energyRing;
     ArrayList<GizmoCard> archive;
     Toolbar toolbar;
     boolean fileBlocked, researchBlocked;
@@ -21,7 +21,7 @@ public class Player implements Comparable<Player>
     public Player(int num)
     {
         victoryPoints = new ArrayList<>();
-        energyRing = new ArrayList<>();
+        energyRing = new EnergyRing();
         archive = new ArrayList<>();
         toolbar = new Toolbar();
         fileBlocked = false;
@@ -71,7 +71,7 @@ public class Player implements Comparable<Player>
      */
     public void convert1To1(MarbleColor oldColor, MarbleColor newColor)
     {
-        for (Marble m : energyRing) {
+        for (Marble m : energyRing.getRing()) {
             if (m.getColor() == oldColor) {
                 m.setColor(newColor);
                 break;
@@ -86,10 +86,10 @@ public class Player implements Comparable<Player>
      */
     public void convert1To2(MarbleColor oldColor, MarbleColor newColor)
     {
-        for (Marble m : energyRing) {
+        for (Marble m : energyRing.getRing()) {
             if (m.getColor() == oldColor) {
                 m.setColor(newColor);
-                energyRing.add(m);
+                energyRing.addMarble(m);
                 break;
             }
         }
@@ -106,22 +106,16 @@ public class Player implements Comparable<Player>
     }
 
     /**
-     * Checks if player as an available space in their energy ring. If so returns an arrayList of the edited first 6
-     * that we will set to the first6 in the energyDispenser class
-     * If not, then it returns the same first6 that has not been edited
+     * Checks if player as an available space in their energy ring.
      * Takes in the player's choice and removes it from the first 6 to add to their energyRing
      *
      * @param choice player's pick from the first 6 marbles
      * @param first6 the first 6 marbles of the energyDispenser
      */
-    public ArrayList<Marble> pickFrom6(int choice, ArrayList<Marble> first6)
+    public void pickFrom6(int choice, ArrayList<Marble> first6)
     {
-        if (energyRing.size() < maxEnergy)
-        {
-            energyRing.add(first6.remove(choice-1));
-            return first6;
-        }
-        return first6;
+        if (energyRing.getRing().size() < maxEnergy)
+            energyRing.addMarble(first6.remove(choice-1));
     }
 
     /**
@@ -132,12 +126,12 @@ public class Player implements Comparable<Player>
      */
     public ArrayList<Marble> pickRandom(ArrayList<Marble> energyDispenser)
     {
-        if (energyRing.size() < maxEnergy)
+        if (energyRing.getRing().size() < maxEnergy)
         {
             int size = energyDispenser.size();
             Random rand = new Random();
             int randomChoice = rand.nextInt(size);
-            energyRing.add(energyDispenser.remove(randomChoice));
+            energyRing.addMarble(energyDispenser.remove(randomChoice));
             return energyDispenser;
         }
         return energyDispenser;
@@ -153,18 +147,7 @@ public class Player implements Comparable<Player>
      */
     public void build(int numOfRed, int numOfBlue, int numOfYellow, int numOfBlack, GizmoCard g)
     {
-        int red = 0; int blue = 0; int yellow = 0; int black = 0;
-        for (Marble m : energyRing) {
-            if (m.getColor() == MarbleColor.RED)
-                red++;
-            else if (m.getColor() == MarbleColor.BLUE)
-                blue++;
-            else if (m.getColor() == MarbleColor.YELLOW)
-                yellow++;
-            else if (m.getColor() == MarbleColor.BLACK)
-                black++;
-        }
-        if (red >= numOfRed && blue >= numOfBlue && yellow >= numOfYellow && black >= numOfBlack)
+        if (energyRing.getNumOfRed() >= numOfRed && energyRing.getNumOfBlue() >= numOfBlue && energyRing.getNumOfYellow() >= numOfYellow && energyRing.getNumOfBlack() >= numOfBlack)
             toolbar.addGizmoCard(g);
 
     }
@@ -273,6 +256,12 @@ public class Player implements Comparable<Player>
      * @return The player's energy ring as an <code>ArrayList</code> of <code>Marble</code>s.
      */
     public ArrayList<Marble> getEnergyRing() {
+        return energyRing.getRing();
+    }
+
+    public EnergyRing getPlayerRingClass()
+    {
         return energyRing;
     }
+
 }
