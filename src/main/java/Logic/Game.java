@@ -20,8 +20,7 @@ public class Game
     /**
      * instantiates all attributes related to the game
      */
-    public Game()
-    {
+    public Game() throws IOException {
         playerList = new ArrayList<>();
         IntStream.rangeClosed(1, 4).forEach(i -> playerList.add(new Player(i)));
         try {
