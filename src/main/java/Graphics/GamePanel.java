@@ -15,12 +15,14 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import static java.lang.System.*;
 
 public class GamePanel extends JPanel implements MouseListener
 {
-    private BufferedImage start;
+    private BufferedImage start, gameScreen;
     private int choice;
     private ArrayList<Player> playerList;
+    private TreeMap<Integer, Integer> archiveCardCoord;
     private Deck deck;
     private Player currentPlayer;
     private Player firstPlayer;
@@ -32,32 +34,44 @@ public class GamePanel extends JPanel implements MouseListener
     private boolean fileButtonClicked, pickButtonClicked, buildButtonClicked, researchButtonClicked, endTurnButtonClicked, fieldButtonClicked, archiveButtonClicked;
     private boolean marble1Clicked, marble2Clicked, marble3Clicked, marble4Clicked, marble5Clicked, marble6Clicked;
     private boolean card1Clicked, card2Clicked, card3Clicked, card4Clicked, card5Clicked, card6Clicked, card7Clicked, card8Clicked, card9Clicked;
-    private boolean tier1DeckClicked, tier2DeckClicked, tier3DeckClicked;
+    private boolean tier1DeckClicked, tier2DeckClicked, tier3DeckClicked, rulesButtonClicked;
     public GamePanel()
     {
         try
         {
             start = ImageIO.read(Objects.requireNonNull(GamePanel.class.getResource("/Images/Screens/StartScreen.jpg")));
+            gameScreen = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/Screens/gameScreen.png"))));
         }
         catch (Exception e){
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage() +" hello");
             return;
         }
         addMouseListener(this);
 
         playerList = new ArrayList<>();
+        archiveCardCoord = new TreeMap<Integer, Integer>();
+
         IntStream.rangeClosed(1, 4).forEach(i -> playerList.add(new Player(i)));
-//        deck = new Deck(); error with exception
+
+//        try {
+//            deck = new Deck();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+
         currentPlayer = playerList.get(0); //not sure of
         firstPlayer = playerList.get(0);
         gameEnd = false;
-        gameStart = true;
+        gameStart = false;
         energyDispenser = new EnergyDispenser();
         fileButtonVisible = false; pickButtonVisible = false; buildButtonVisible = false; researchButtonVisible = false; endTurnButtonVisible = false; fieldButtonVisible = false; archiveButtonVisible = false;
         fileButtonClicked = false; pickButtonClicked = false; buildButtonClicked = false; researchButtonClicked = false; endTurnButtonClicked = false; fieldButtonClicked = false; archiveButtonClicked = false;
         marble1Clicked = false; marble2Clicked = false; marble3Clicked = false; marble4Clicked = false; marble5Clicked = false; marble6Clicked = false;
         card1Clicked = false; card2Clicked = false; card3Clicked = false; card4Clicked = false; card5Clicked = false; card6Clicked = false; card7Clicked = false; card8Clicked = false; card9Clicked = false;
-        tier1DeckClicked = false; tier2DeckClicked = false; tier3DeckClicked = false;
+        tier1DeckClicked = false; tier2DeckClicked = false; tier3DeckClicked = false; rulesButtonClicked = false;
+
+
+//        archiveCardCoord.put()
     }
 
     /**
@@ -80,7 +94,7 @@ public class GamePanel extends JPanel implements MouseListener
         {
             setPrompt("Please choose an action:");
             //repaint()
-            waitFor4ActionClick();
+//            waitFor4ActionClick();
             if (fileButtonClicked == true)
             {
                 setPrompt("Please choose a card on the field to file:");
@@ -112,7 +126,8 @@ public class GamePanel extends JPanel implements MouseListener
                 }
                 else if (archiveButtonClicked == true)
                 {
-
+                    setPrompt("Please choose a card from your archive to build:");
+                    //wait for player input to pick either field or archive, will write code later
                 }
             }
             else if (researchButtonClicked == true)
@@ -286,24 +301,6 @@ public class GamePanel extends JPanel implements MouseListener
             return 6;
         return 1;
     }
-//
-//    /**
-//     * @param marbleClicked the number of the marble clicked starting with 1 at the top to 6 at the bottom
-//     * @return the marble that the player clicked, if for some reason is none of the cases just returns 1st marble
-//     */
-//    public Marble pickedMarble(int marbleClicked)
-//    {
-//        switch (marbleClicked)
-//        {
-//            case 1: return energyDispenser.getFirstSix().get(0);
-//            case 2: return energyDispenser.getFirstSix().get(1);
-//            case 3: return energyDispenser.getFirstSix().get(2);
-//            case 4: return energyDispenser.getFirstSix().get(3);
-//            case 5: return energyDispenser.getFirstSix().get(4);
-//            case 6: return energyDispenser.getFirstSix().get(5);
-//        }
-//        return energyDispenser.getFirstSix().get(0);
-//    }
 
     public void paint(Graphics g)
     {
@@ -311,10 +308,27 @@ public class GamePanel extends JPanel implements MouseListener
 //        Menu Screen
         g.drawImage(start, 0, 0, 1366, 768, null);
 
+//        Rules downloaded
+        if (rulesButtonClicked == true)
+            drawRulesDownloaded(g);
+
 //        Game Screen
-//        if (gameStart == true)
-//            g.drawImage();
+        if (gameStart == true) {
+            g.drawImage(gameScreen, 0, 0, 1366, 768, null);
+            fileButtonVisible = true; pickButtonVisible = true; buildButtonVisible = true; researchButtonVisible = true;
+        }
+        // four buttons
+
         //g.drawString(prompt, 800, 700); // just made some random coordinates for where the prompt is gonna be, change later
+
+    }
+
+    public void drawRulesDownloaded(Graphics g)
+    {
+        Font f = new Font("Serif", Font.BOLD, 35);
+        g.setFont(f);
+        g.setColor(Color.WHITE);
+        g.drawString("Rules successfully downloaded! Loading it for you right now...", 300, 50);
     }
 
     public void setPrompt(String str)
@@ -352,19 +366,23 @@ public class GamePanel extends JPanel implements MouseListener
     {
         int x = e.getX();
         int y = e.getY();
-        if (x >= 0 && x <= 295 && y >= 0 && y <= 124){
+        if (x >= 0 && x <= 295 && y >= 0 && y <= 124 && gameStart == false){
+            rulesButtonClicked = true;
+            repaint();
             System.out.println("Downloaded Rules");
+            waitForSeconds(2);
             downloadRules();
         }
         if(x>=443 && x<=924 && y>=562 && y<=706){
             System.out.println("Game Started!");
             gameStart = true;
         }
+        out.println("( "+ x +", "+ y +" )");
         // player clicks on card to file from the 3 tiers
         // player clicks on 4 buttons
         // after player clicks on build, show two buttons: field and archive and allow player to choose one
         // player clicks on one of the 3 tiers and then clicks on a card to research
-
+        repaint();
     }
 
     @Override
@@ -413,6 +431,7 @@ public class GamePanel extends JPanel implements MouseListener
             Desktop.getDesktop().open(new File(home+"/Downloads/GizmosRules.pdf"));
         } catch (IOException e) {
             e.printStackTrace();
+            out.println("hi");
         }
     }
 }
