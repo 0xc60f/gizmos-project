@@ -39,7 +39,7 @@ public class GamePanel extends JPanel implements MouseListener
     {
         try
         {
-            start = ImageIO.read(Objects.requireNonNull(GamePanel.class.getResource("/Images/Screens/StartScreen.jpg")));
+            start = ImageIO.read(Objects.requireNonNull(GamePanel.class.getResource("/Images/Screens/startScreen.JPG")));
             gameScreen = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/Screens/gameScreen.png"))));
         }
         catch (Exception e){
@@ -306,7 +306,7 @@ public class GamePanel extends JPanel implements MouseListener
     {
 //        super.paint(g);
 //        Menu Screen
-        g.drawImage(start, 0, 0, 1366, 768, null);
+        g.drawImage(start, 0, 0, 1600, 900, null);
 
 //        Rules downloaded
         if (rulesButtonClicked == true)
@@ -314,7 +314,7 @@ public class GamePanel extends JPanel implements MouseListener
 
 //        Game Screen
         if (gameStart == true) {
-            g.drawImage(gameScreen, 0, 0, 1366, 768, null);
+            g.drawImage(gameScreen, 0, 0, 1600, 900, null);
             fileButtonVisible = true; pickButtonVisible = true; buildButtonVisible = true; researchButtonVisible = true;
         }
         // four buttons
@@ -366,17 +366,20 @@ public class GamePanel extends JPanel implements MouseListener
     {
         int x = e.getX();
         int y = e.getY();
-        if (x >= 0 && x <= 295 && y >= 0 && y <= 124 && gameStart == false){
+        if (x >= 566 && x <= 1052 && y >= 734 && y <= 805 && gameStart == false){
             rulesButtonClicked = true;
             repaint();
             System.out.println("Downloaded Rules");
             waitForSeconds(2);
             downloadRules();
         }
-        if(x>=443 && x<=924 && y>=562 && y<=706){
+        if(x>=514 && x<= 1086 && y>=586 && y<=721){
             System.out.println("Game Started!");
             gameStart = true;
         }
+        if (x >= 200 && y >= 30 && x <= 350 && y <= 180)
+            System.out.println("card 1 archive clicked");
+//        if (x >= 205 && y >= 30 && x <=)
         out.println("( "+ x +", "+ y +" )");
         // player clicks on card to file from the 3 tiers
         // player clicks on 4 buttons
@@ -431,7 +434,6 @@ public class GamePanel extends JPanel implements MouseListener
             Desktop.getDesktop().open(new File(home+"/Downloads/GizmosRules.pdf"));
         } catch (IOException e) {
             e.printStackTrace();
-            out.println("hi");
         }
     }
 }
