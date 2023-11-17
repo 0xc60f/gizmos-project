@@ -1,5 +1,6 @@
 package Logic;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -19,11 +20,14 @@ public class Game
     /**
      * instantiates all attributes related to the game
      */
-    public Game()
-    {
+    public Game() throws IOException {
         playerList = new ArrayList<>();
         IntStream.rangeClosed(1, 4).forEach(i -> playerList.add(new Player(i)));
-        deck = new Deck();
+        try {
+            deck = new Deck();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         currentPlayer = playerList.get(0); //not sure of
         firstPlayer = playerList.get(0);
         gameEnd = false;
