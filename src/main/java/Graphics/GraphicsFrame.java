@@ -6,8 +6,8 @@ import javax.swing.*;
  * This holds the game in a JFrame.
  */
 public class GraphicsFrame extends JFrame {
-    private final int WIDTH = 1920;
-    private final int HEIGHT = 1080;
+    private final int WIDTH = 1600;
+    private final int HEIGHT = 900;
     public GraphicsFrame() {
         super("Gizmos");
         setSize(WIDTH, HEIGHT);

@@ -19,7 +19,7 @@ import static java.lang.System.*;
 
 public class GamePanel extends JPanel implements MouseListener
 {
-    private BufferedImage start, gameScreen;
+    private BufferedImage start, gameScreen, black1Rank1, multiColor1Rank3;
     private int choice;
     private ArrayList<Player> playerList;
     private TreeMap<Integer, Integer> archiveCardCoord;
@@ -40,7 +40,9 @@ public class GamePanel extends JPanel implements MouseListener
         try
         {
             start = ImageIO.read(Objects.requireNonNull(GamePanel.class.getResource("/Images/Screens/startScreen.JPG")));
-            gameScreen = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/Screens/gameScreen.png"))));
+            gameScreen = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/Screens/gameSreen.png"))));
+            black1Rank1 = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/GizmoCards/Black1Rank1.png"))));
+            multiColor1Rank3 = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/GizmoCards/MultiColor1Rank3.png"))));
         }
         catch (Exception e){
             System.out.println(e.getMessage() +" hello");
@@ -53,11 +55,11 @@ public class GamePanel extends JPanel implements MouseListener
 
         IntStream.rangeClosed(1, 4).forEach(i -> playerList.add(new Player(i)));
 
-//        try {
-//            deck = new Deck();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        try {
+            deck = new Deck();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         currentPlayer = playerList.get(0); //not sure of
         firstPlayer = playerList.get(0);
@@ -70,8 +72,12 @@ public class GamePanel extends JPanel implements MouseListener
         card1Clicked = false; card2Clicked = false; card3Clicked = false; card4Clicked = false; card5Clicked = false; card6Clicked = false; card7Clicked = false; card8Clicked = false; card9Clicked = false;
         tier1DeckClicked = false; tier2DeckClicked = false; tier3DeckClicked = false; rulesButtonClicked = false;
 
-
-//        archiveCardCoord.put()
+        //set archive card coordinates
+//        for (int i = 0; i < 7; i++)
+//        {
+//            int x = 200;
+////            archiveCardCoord.put(, )
+//        }
     }
 
     /**
@@ -282,7 +288,7 @@ public class GamePanel extends JPanel implements MouseListener
             case 8: return deck.getTier3()[0];
             case 9: return deck.getTier3()[1];
         }
-        return deck.getTier1()[0];
+        return null;
     }
 
     public int getMarbleNumberPicked()
@@ -306,8 +312,10 @@ public class GamePanel extends JPanel implements MouseListener
     {
 //        super.paint(g);
 //        Menu Screen
-        g.drawImage(start, 0, 0, 1600, 900, null);
+        if(gameStart == false)
+            g.drawImage(start, 0, 0, 1600, 900, null);
 
+        out.println(getWidth()+" "+ getHeight());
 //        Rules downloaded
         if (rulesButtonClicked == true)
             drawRulesDownloaded(g);
@@ -316,6 +324,27 @@ public class GamePanel extends JPanel implements MouseListener
         if (gameStart == true) {
             g.drawImage(gameScreen, 0, 0, 1600, 900, null);
             fileButtonVisible = true; pickButtonVisible = true; buildButtonVisible = true; researchButtonVisible = true;
+            g.drawImage(black1Rank1, 180, 25, 150, 150, null);
+            g.drawImage(multiColor1Rank3, 310, 25, 150, 150, null);
+            g.drawImage(black1Rank1, 440, 25, 150, 150, null);
+            g.drawImage(multiColor1Rank3, 570, 25, 150, 150, null);
+            g.drawImage(black1Rank1, 700, 25, 150, 150, null);
+            g.drawImage(multiColor1Rank3, 830, 25, 150, 150, null);
+            g.drawImage(black1Rank1, 960, 25, 150, 150, null);
+
+            g.drawImage(black1Rank1, 560, 705, 100, 100, null);
+            g.drawImage(black1Rank1, 660, 705, 100, 100, null);
+            g.drawImage(black1Rank1, 760, 705, 100, 100, null);
+            g.drawImage(black1Rank1, 860, 705, 100, 100, null);
+            g.drawImage(black1Rank1, 960, 705, 100, 100, null);
+
+
+            g.drawImage(black1Rank1, 560, 800, 100, 100, null);
+            g.drawImage(black1Rank1, 660, 800, 100, 100, null);
+            g.drawImage(black1Rank1, 760, 800, 100, 100, null);
+            g.drawImage(black1Rank1, 860, 800, 100, 100, null);
+            g.drawImage(black1Rank1, 960, 800, 100, 100, null);
+
         }
         // four buttons
 
@@ -323,6 +352,43 @@ public class GamePanel extends JPanel implements MouseListener
 
     }
 
+    @Override
+    public void mouseClicked(MouseEvent e)
+    {
+        int x = e.getX();
+        int y = e.getY();
+        if (x >= 566 && x <= 1052 && y >= 734 && y <= 805 && gameStart == false){
+            rulesButtonClicked = true;
+            repaint();
+            System.out.println("Downloaded Rules");
+            waitForSeconds(2);
+            downloadRules();
+        }
+        if(x>=514 && x<= 1086 && y>=586 && y<=721){
+            System.out.println("Game Started!");
+            gameStart = true;
+        }
+        if (x >= 200 && y >= 30 && x <= 320 && y <= 160)
+            System.out.println("card 1 archive clicked");
+        if (x >= 330 && y >= 30 && x <= 450 && y <= 160)
+            System.out.println("card 2 archive clicked");
+
+        out.println("( "+ x +", "+ y +" )");
+        // player clicks on card to file from the 3 tiers
+        // player clicks on 4 buttons
+        // after player clicks on build, show two buttons: field and archive and allow player to choose one
+        // player clicks on one of the 3 tiers and then clicks on a card to research
+        repaint();
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {    }
+    @Override
+    public void mouseReleased(MouseEvent e) {    }
+    @Override
+    public void mouseEntered(MouseEvent e) {    }
+    @Override
+    public void mouseExited(MouseEvent e) {    }
     public void drawRulesDownloaded(Graphics g)
     {
         Font f = new Font("Serif", Font.BOLD, 35);
@@ -360,42 +426,6 @@ public class GamePanel extends JPanel implements MouseListener
             }
         }
     }
-
-    @Override
-    public void mouseClicked(MouseEvent e)
-    {
-        int x = e.getX();
-        int y = e.getY();
-        if (x >= 566 && x <= 1052 && y >= 734 && y <= 805 && gameStart == false){
-            rulesButtonClicked = true;
-            repaint();
-            System.out.println("Downloaded Rules");
-            waitForSeconds(2);
-            downloadRules();
-        }
-        if(x>=514 && x<= 1086 && y>=586 && y<=721){
-            System.out.println("Game Started!");
-            gameStart = true;
-        }
-        if (x >= 200 && y >= 30 && x <= 350 && y <= 180)
-            System.out.println("card 1 archive clicked");
-//        if (x >= 205 && y >= 30 && x <=)
-        out.println("( "+ x +", "+ y +" )");
-        // player clicks on card to file from the 3 tiers
-        // player clicks on 4 buttons
-        // after player clicks on build, show two buttons: field and archive and allow player to choose one
-        // player clicks on one of the 3 tiers and then clicks on a card to research
-        repaint();
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {    }
-    @Override
-    public void mouseReleased(MouseEvent e) {    }
-    @Override
-    public void mouseEntered(MouseEvent e) {    }
-    @Override
-    public void mouseExited(MouseEvent e) {    }
     private static void downloadUsingStream(String urlStr, String file) throws IOException
     {
         URL url = new URL(urlStr);

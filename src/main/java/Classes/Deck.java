@@ -22,13 +22,15 @@ public class Deck {
      * Initializes the deck of cards. This should only be called once.
      * This will create the decks of cards and move the top 5 cards from each deck into the tier arrays.
      */
-    public Deck() throws IOException
-    {
+    public Deck() throws IOException {
+        level1 = new Stack<>();
+        level2 = new Stack<>();
+        level3 = new Stack<>();
         cards = new EnumMap<>(GizmoLevel.class);
-        addAllCards();
         cards.put(GizmoLevel.LEVEL1, level1);
         cards.put(GizmoLevel.LEVEL2, level2);
         cards.put(GizmoLevel.LEVEL3, level3);
+        addAllCards();
         level1 = cards.get(GizmoLevel.LEVEL1);
         level2 = cards.get(GizmoLevel.LEVEL2);
         level3 = cards.get(GizmoLevel.LEVEL3);
@@ -42,7 +44,7 @@ public class Deck {
 
     }
     private void addAllCards() throws IOException{
-        level1.push(new GizmoCard(MarbleColor.BLACK, 1, 1, GizmoType.BUILD, "build1get1victorypoint", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("Images/Black1Rank1.png")))));
+        level1.push(new GizmoCard(MarbleColor.BLACK, 1, 1, GizmoType.BUILD, "build1get1victorypoint", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Black1Rank1.png")))));
         level2.push(new GizmoCard(MarbleColor.BLACK, 2, 2, GizmoType.PICK, "pickthisorthatpickrandom", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Black1Rank2.png")))));
         level3.push(new GizmoCard(MarbleColor.BLACK, 5, 5, GizmoType.CONVERTOR, "convert1or2to2", 5, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Black1Rank3.png")))));
         level1.push(new GizmoCard(MarbleColor.BLACK, 1, 1, GizmoType.BUILD, "buildpick1from6", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Black2Rank1.png")))));
@@ -67,6 +69,7 @@ public class Deck {
         level2.push(new GizmoCard(MarbleColor.BLACK, 3,3, GizmoType.BUILD, "buildthisorthatget1victorypoint", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Black9Rank2.png")))));
         level1.push(new GizmoCard(MarbleColor.BLUE, 1,1, GizmoType.BUILD, "build1get1victorypoint", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Blue1Rank1.png")))));
         level2.push(new GizmoCard(MarbleColor.BLUE, 2,2, GizmoType.PICK, "pickthisorthatpickrandom", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Blue1Rank2.png")))));
+
         level3.push(new GizmoCard(MarbleColor.BLUE, 5,5, GizmoType.CONVERTOR, "convert1to2", 5, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Blue1Rank3.png")))));
         level1.push(new GizmoCard(MarbleColor.BLUE,1,1, GizmoType.BUILD, "buildpick1from6", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Blue2Rank1.png")))));
         level2.push(new GizmoCard(MarbleColor.BLUE, 1,1, GizmoType.UPGRADE, "e2f1r2", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Blue2Rank2.png")))));
@@ -108,7 +111,7 @@ public class Deck {
         level3.push(new GizmoCard(MarbleColor.RED, 5, 5, GizmoType.BUILD, "buildthisorthatget2victorypoints", 6, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Red5Rank3.png")))));
         level1.push(new GizmoCard(MarbleColor.RED, 1, 1, GizmoType.CONVERTOR, "convert1toany", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Red6Rank1.png")))));
         level2.push(new GizmoCard(MarbleColor.RED, 3, 3, GizmoType.BUILD, "buildFromFilePick2From6", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Red6Rank2.png")))));
-        level3.push(new GizmoCard(MarbleColor.RED, 7, 7, GizmoType.BUILD, "buildThisOrThatResearch", 7, ImageIO.read(Objects.requireNonNull((Deck.class.getResource("/Images/GzmoCards/Red6Rank3.png"))))));
+        level3.push(new GizmoCard(MarbleColor.RED, 7, 7, GizmoType.BUILD, "buildThisOrThatResearch", 7, ImageIO.read(Objects.requireNonNull((Deck.class.getResource("/Images/GizmoCards/Red6Rank3.png"))))));
         level1.push((new GizmoCard(MarbleColor.RED, 1, 1, GizmoType.CONVERTOR, "convert1toany", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Red7rank1.png"))))));
         level2.push(new GizmoCard(MarbleColor.RED, 2, 2, GizmoType.BUILD, "buildThisOrThatPick1From", 4, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Red7Rank2.png")))));
         level3.push(new GizmoCard(MarbleColor.RED, 5, 5, GizmoType.UPGRADE, "upgrade1LessEnergyToBuildFromFile", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Red7Rank3.png")))));
@@ -229,5 +232,20 @@ public class Deck {
     public GizmoCard[] getTier3()
     {
         return tier3;
+    }
+
+    public Stack<GizmoCard> getDeck1()
+    {
+        return level1;
+    }
+
+    public Stack<GizmoCard> getDeck2()
+    {
+        return level2;
+    }
+
+    public Stack<GizmoCard> getDeck3()
+    {
+        return level3;
     }
 }
