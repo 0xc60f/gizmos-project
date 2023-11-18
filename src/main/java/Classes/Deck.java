@@ -22,7 +22,8 @@ public class Deck {
      * Initializes the deck of cards. This should only be called once.
      * This will create the decks of cards and move the top 5 cards from each deck into the tier arrays.
      */
-    public Deck() throws IOException {
+    public Deck() throws IOException
+    {
         cards = new EnumMap<>(GizmoLevel.class);
         addAllCards();
         cards.put(GizmoLevel.LEVEL1, level1);
