@@ -30,4 +30,5 @@ public class Marble {
     public MarbleColor getColor() {
         return color;
     }
+
 }

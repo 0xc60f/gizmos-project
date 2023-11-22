@@ -1,17 +1,19 @@
 package Classes;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.Random;
+import java.util.HashSet;
+
 public class Player implements Comparable<Player>
 {
     ArrayList<BonusVictoryPoint> victoryPoints;
     EnergyRing energyRing;
     ArrayList<GizmoCard> archive;
+    ArrayList<GizmoCard> cardsResearching;
     Toolbar toolbar;
     boolean fileBlocked, researchBlocked;
-    int playerNumber, numberToResearch, maxEnergy, score, maxArchive;
+    int playerNumber, maxResearch, score, maxArchive, convertCardClicked, player1Or2ConvertChoice, actionPicked;
 
     /**
      * Instantiates all the player's attributes
@@ -23,16 +25,40 @@ public class Player implements Comparable<Player>
         victoryPoints = new ArrayList<>();
         energyRing = new EnergyRing();
         archive = new ArrayList<>();
+        cardsResearching = new ArrayList<GizmoCard>();
         toolbar = new Toolbar();
-        fileBlocked = false;
-        researchBlocked = false;
+        fileBlocked = false; researchBlocked = false;
         playerNumber = num;
-        numberToResearch = 3;
-        maxEnergy = 5;
+        maxResearch = 3;
         maxArchive = 1;
         score = 0;
     }
 
+
+    public ArrayList<GizmoCard> getArchive()
+    {
+        return archive;
+    }
+
+    public void setArchive(ArrayList<GizmoCard> list)
+    {
+        archive = list;
+    }
+
+    public ArrayList<GizmoCard> getCardsResearching()
+    {
+        return cardsResearching;
+    }
+
+    public void addCardsResearching(GizmoCard g)
+    {
+        cardsResearching.add(g);
+    }
+
+    public void setCardsResearching(ArrayList<GizmoCard> list)
+    {
+        cardsResearching = list;
+    }
 
     public int getPlayerNumber()
     {
@@ -51,7 +77,7 @@ public class Player implements Comparable<Player>
         {
             case RING:
                 if (num > 0)
-                    maxEnergy += num;
+                    energyRing.updateEnergyRingMax(num);
                 break;
             case ARCHIVE:
                 if (num > 0)
@@ -59,7 +85,7 @@ public class Player implements Comparable<Player>
                 break;
             case RESEARCH:
                 if (num > 0)
-                    numberToResearch += num;
+                    maxResearch += num;
                 break;
         }
     }
@@ -114,7 +140,7 @@ public class Player implements Comparable<Player>
      */
     public void pickFrom6(int choice, ArrayList<Marble> first6)
     {
-        if (energyRing.getRing().size() < maxEnergy)
+        if (energyRing.getRing().size() < energyRing.getEnergyRingMax())
             energyRing.addMarble(first6.remove(choice-1));
     }
 
@@ -126,7 +152,7 @@ public class Player implements Comparable<Player>
      */
     public ArrayList<Marble> pickRandom(ArrayList<Marble> energyDispenser)
     {
-        if (energyRing.getRing().size() < maxEnergy)
+        if (energyRing.getRing().size() < energyRing.getEnergyRingMax())
         {
             int size = energyDispenser.size();
             Random rand = new Random();
@@ -148,7 +174,6 @@ public class Player implements Comparable<Player>
     {
         if (energyRing.getNumOfRed() >= numOfRed && energyRing.getNumOfBlue() >= numOfBlue && energyRing.getNumOfYellow() >= numOfYellow && energyRing.getNumOfBlack() >= numOfBlack)
             toolbar.addGizmoCard(g);
-
     }
 
     /**
@@ -158,18 +183,9 @@ public class Player implements Comparable<Player>
     public ArrayList<GizmoCard> research(ArrayList<GizmoCard> deckTier)
     {
         ArrayList<GizmoCard> cardsToDraw = new ArrayList<GizmoCard>();
-        for (int i = 0; i < numberToResearch; i++)
+        for (int i = 0; i < maxResearch; i++)
             cardsToDraw.add(deckTier.remove(0));
         return cardsToDraw;
-    }
-
-
-    /**
-     * returns the limit of the player's ring
-     */
-    public int getEnergyRingMax()
-    {
-        return maxEnergy;
     }
 
     /**
@@ -177,7 +193,7 @@ public class Player implements Comparable<Player>
      */
     public int getArchiveMax()
     {
-        return numberToResearch;
+        return maxResearch;
     }
 
     /**
@@ -236,8 +252,21 @@ public class Player implements Comparable<Player>
         return victoryPoints.stream().mapToInt(BonusVictoryPoint::getValue).sum();
     }
 
+    public ArrayList<BonusVictoryPoint> getBonusVictoryPoints()
+    {
+        return victoryPoints;
+    }
 
 
+    public void addBonusVPTokens(BonusVictoryPoint vp)
+    {
+        victoryPoints.add(vp);
+    }
+
+    public void setBonusVP(ArrayList<BonusVictoryPoint> list)
+    {
+        victoryPoints = list;
+    }
 
 
     /**
@@ -261,6 +290,43 @@ public class Player implements Comparable<Player>
     public EnergyRing getPlayerRingClass()
     {
         return energyRing;
+    }
+
+    public void setActionPicked(int num)
+    {
+        actionPicked = num;
+    }
+
+    /**
+     * ACTION PICKED RETURNS INTEGER 1-5
+     * 1 = CONVERT
+     * 2 = FILE
+     * 3 = PICK
+     * 4 = BUILD
+     * 5 = RESEARCH
+     */
+    public int getActionPicked()
+    {
+        return actionPicked;
+    }
+
+    public int getConvertCardClicked()
+    {
+        return convertCardClicked;
+    }
+
+    public void setConvertMethodClicked(int x)
+    {
+        convertCardClicked = x;
+    }
+    public int get1Or2ConvertChoice()
+    {
+        return player1Or2ConvertChoice;
+    }
+
+    public void set1Or2ConvertChoice(int x)
+    {
+        player1Or2ConvertChoice = x;
     }
 
 }

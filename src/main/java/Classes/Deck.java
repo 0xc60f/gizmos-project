@@ -162,6 +162,21 @@ public class Deck {
         };
     }
 
+    public void addCardToTier1(int cardIndexTaken)
+    {
+        tier1[cardIndexTaken] = level1.pop();
+    }
+
+    public void addCardToTier2(int cardIndexTaken)
+    {
+        tier1[cardIndexTaken] = level2.pop();
+    }
+
+    public void addCardToTier3(int cardIndexTaken)
+    {
+        tier1[cardIndexTaken] = level3.pop();
+    }
+
     /**
      * Puts the given card on the bottom of the deck for the given level.
      * @param card The card to put on the bottom of the deck as a <code>GizmoCard</code>.
