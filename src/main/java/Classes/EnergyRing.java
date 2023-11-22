@@ -4,6 +4,7 @@ import java.util.ArrayList;
 public class EnergyRing
 {
     private ArrayList<Marble> energyRing;
+    private int maxEnergy;
     private int numOfRed, numOfBlue, numOfBlack, numOfYellow;
 
     public EnergyRing()
@@ -13,11 +14,25 @@ public class EnergyRing
         numOfBlack = 0;
         numOfBlue = 0;
         numOfYellow = 0;
+        maxEnergy = 5;
     }
 
     public ArrayList<Marble> getRing()
     {
         return energyRing;
+    }
+
+    /**
+     * returns the limit of the player's ring
+     */
+    public int getEnergyRingMax()
+    {
+        return maxEnergy;
+    }
+
+    public void updateEnergyRingMax(int x)
+    {
+        maxEnergy += x;
     }
 
     public int getNumOfRed()
@@ -66,5 +81,9 @@ public class EnergyRing
         energyRing.remove(m);
     }
 
+    public void setEnergyRing(ArrayList<Marble> list)
+    {
+        energyRing = list;
+    }
 
 }

@@ -52,7 +52,7 @@ public class GizmoCard implements Card, CardEffect {
 
     @Override
     public GizmoType getType() {
-        return null;
+        return category;
     }
 
     @Override

@@ -3,6 +3,8 @@ package Graphics;
 import Classes.*;
 
 import java.awt.*;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.*;
@@ -16,10 +18,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import static java.lang.System.*;
-
-public class GamePanel extends JPanel implements MouseListener
-{
-    private BufferedImage start, gameScreen;
+import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.TreeSet;
+public class GamePanel extends JPanel implements MouseListener {
+    private BufferedImage start, gameScreen, black1Rank1, multiColor1Rank3, energyRing, blankGameScreen, blackMarble, blueMarble, redMarble, yellowMarble;
+    private BufferedImage firstPlayerTB, otherPlayerTB, tier1, tier2, tier3, promptBox, yellow9Rank1, Black2Rank1, Black3Rank1, Black7Rank1, Black9Rank1;
+    private BufferedImage Rank1, Rank2, Rank3, prompt, victoryPoint1, victoryPoint5, fileButton, pickButton, buildButton, researchButton, yesButton, noButton, endTurnButton;
+    private BufferedImage playerOne, playerTwo, playerThree, playerFour;
     private int choice;
     private ArrayList<Player> playerList;
     private TreeMap<Integer, Integer> archiveCardCoord;
@@ -29,23 +37,33 @@ public class GamePanel extends JPanel implements MouseListener
     private boolean gameEnd;
     private boolean gameStart;
     private EnergyDispenser energyDispenser;
-    private String prompt;
-    private boolean fileButtonVisible, pickButtonVisible, buildButtonVisible, researchButtonVisible, endTurnButtonVisible, fieldButtonVisible, archiveButtonVisible;
-    private boolean fileButtonClicked, pickButtonClicked, buildButtonClicked, researchButtonClicked, endTurnButtonClicked, fieldButtonClicked, archiveButtonClicked;
-    private boolean marble1Clicked, marble2Clicked, marble3Clicked, marble4Clicked, marble5Clicked, marble6Clicked;
-    private boolean card1Clicked, card2Clicked, card3Clicked, card4Clicked, card5Clicked, card6Clicked, card7Clicked, card8Clicked, card9Clicked;
-    private boolean tier1DeckClicked, tier2DeckClicked, tier3DeckClicked, rulesButtonClicked;
-    public GamePanel()
-    {
-        try
-        {
-            start = ImageIO.read(Objects.requireNonNull(GamePanel.class.getResource("/Images/Screens/StartScreen.jpg")));
-            gameScreen = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/Screens/gameScreen.png"))));
-        }
-        catch (Exception e){
-            System.out.println(e.getMessage() +" hello");
-            return;
-        }
+    private String promptStr;
+    private boolean fileButtonVisible, pickButtonVisible, buildButtonVisible, researchButtonVisible, endTurnButtonVisible, fieldButtonVisible, archiveButtonVisible, yesButtonVisible, noButtonVisible;
+    private boolean fileButtonClicked, pickButtonClicked, buildButtonClicked, researchButtonClicked, endTurnButtonClicked, fieldButtonClicked, archiveButtonClicked, yesButtonClicked, noButtonClicked;
+    private Marble marbleClicked;
+    private boolean archiveSectionClicked, upgradeSectionClicked, convertSectionClicked, fileSectionClicked, pickSectionClicked, buildSectionClicked, researchingCardsClicked, first6Clicked;
+    private boolean tier1DeckClicked, tier2DeckClicked, tier3DeckClicked, rulesButtonClicked, startOfPlayerTurn;
+    private int erX, erY, erWidth, erMarbleR1X, erMarbleR1Y, erMarbleWidth, cardWidth;
+    private int archX, archY, archWidth, archTitleX, archTitleY, archTitleLength;
+    private int tbX, tbY, tbSectionWidth, tbWidth, tbLength;
+    private int first6X, first6Y, first6Width;
+    private int ownedCardsHeaderLength;
+    private int tierX, tierY;
+    private int VPTitleX, VPTitleY, VPTitleWidth, VPTitleLength, VPX, VPY, VPWidth, VPlength;
+    private int promptBoxX, promptBoxY, promptBoxWidth, promptBoxLength, promptX, promptY, promptWidth, promptLength, promptROrBCardRow1X, promptROrBCardRow1Y, promptROrBCardRow2X, promptROrBCardRow2Y;
+    private int smallPlayerCardWidth, smallTitleX, smallTitleY, smallTitleWidth, smallTitleLength, smallTBX, smallTBY, smallTBWidth, smallTBLength, smallTBSectionWidth;
+    private int smallCardWidth, smallCardHeaderLength, smallERX, smallERY, smallERWidth, smallEMR1X, smallEMR1Y, smallEMWidth;
+    private int smallVPTitleX, smallVPTitleY, smallVPTitleWidth, smallVPTitleLength, smallVPX, smallVPY, smallVPWidth, smallVPlength;
+
+    private GizmoCard cardClicked;
+    private boolean cardIsClicked, archiveCardClicked;
+    private TreeMap<String, int[]> generalSectionCoord;
+    private int displayPromptChoice;
+
+    public GamePanel() {
+
+        initializeImages();
+
         addMouseListener(this);
 
         playerList = new ArrayList<>();
@@ -53,25 +71,121 @@ public class GamePanel extends JPanel implements MouseListener
 
         IntStream.rangeClosed(1, 4).forEach(i -> playerList.add(new Player(i)));
 
-//        try {
-//            deck = new Deck();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        try
+        {
+            deck = new Deck();
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
 
-        currentPlayer = playerList.get(0); //not sure of
+        currentPlayer = playerList.get(2);
         firstPlayer = playerList.get(0);
         gameEnd = false;
         gameStart = false;
         energyDispenser = new EnergyDispenser();
-        fileButtonVisible = false; pickButtonVisible = false; buildButtonVisible = false; researchButtonVisible = false; endTurnButtonVisible = false; fieldButtonVisible = false; archiveButtonVisible = false;
-        fileButtonClicked = false; pickButtonClicked = false; buildButtonClicked = false; researchButtonClicked = false; endTurnButtonClicked = false; fieldButtonClicked = false; archiveButtonClicked = false;
-        marble1Clicked = false; marble2Clicked = false; marble3Clicked = false; marble4Clicked = false; marble5Clicked = false; marble6Clicked = false;
-        card1Clicked = false; card2Clicked = false; card3Clicked = false; card4Clicked = false; card5Clicked = false; card6Clicked = false; card7Clicked = false; card8Clicked = false; card9Clicked = false;
-        tier1DeckClicked = false; tier2DeckClicked = false; tier3DeckClicked = false; rulesButtonClicked = false;
 
+        resetVisibleFlags();
 
-//        archiveCardCoord.put()
+        resetMouseClickEvents();
+
+        startOfPlayerTurn =false;
+        cardIsClicked = false;
+        archiveCardClicked = false;
+
+        generalSectionCoord = new TreeMap<String, int[]>();
+        initializeAllSectionCoord(generalSectionCoord);
+
+        initializeAllXY();
+    }
+
+    public void initializeImages()
+    {
+        try
+        {
+            start = ImageIO.read(Objects.requireNonNull(GamePanel.class.getResource("/Images/Screens/startScreen.JPG")));
+            gameScreen = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/Screens/gameScreen.png"))));
+            black1Rank1 = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/GizmoCardsTrimmed/Black1Rank1.png"))));
+            multiColor1Rank3 = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/GizmoCardsTrimmed/MultiColor1Rank3.png"))));
+            energyRing = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/energyRing.png"))));
+            gameScreen = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/Screens/gameScreen.png"))));
+            blackMarble = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/BlackMarble.png"))));
+            blueMarble = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/BlueMarble.png"))));
+            redMarble = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/RedMarble.png"))));
+            yellowMarble = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/YellowMarble.png"))));
+            firstPlayerTB = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/firstPlayerToolbar.png"))));
+            otherPlayerTB = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/otherPlayerToolbar.png"))));
+            tier1 = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/tier1.png"))));
+            tier2 = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/tier2.png"))));
+            tier3 = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/tier3.png"))));
+            promptBox = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/promptBox.png"))));
+            yellow9Rank1 = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/GizmoCardsTrimmed/yellow9Rank1.png"))));
+            Black2Rank1 = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/GizmoCardsTrimmed/Black2Rank1.png"))));
+            Black3Rank1 = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/GizmoCardsTrimmed/Black3Rank1.png"))));
+            Black7Rank1 = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/GizmoCardsTrimmed/Black7Rank1.png"))));
+            Black9Rank1 = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/GizmoCardsTrimmed/Black9Rank1.png"))));
+            Rank1 = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/Rank1.png"))));
+            Rank2 = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/Rank2.png"))));
+            Rank3 = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/Rank3.png"))));
+            prompt = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/prompt.png"))));
+            victoryPoint1 = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/victoryPoint1.png"))));
+            victoryPoint5 = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/victoryPoint5.png"))));
+            otherPlayerTB = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/otherPlayerToolbar.png"))));
+            fileButton = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/File.png"))));
+            pickButton = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/Pick.png"))));
+            buildButton = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/Build.png"))));
+            researchButton = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/Research.png"))));
+            endTurnButton = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/End_Turn.png"))));
+            yesButton = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/Yes.png"))));
+            noButton = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/No.png"))));
+            playerOne = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/1.png"))));
+            playerTwo = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/2.png"))));
+            playerThree = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/3.png"))));
+            playerFour = ImageIO.read((Objects.requireNonNull(GamePanel.class.getResource("/Images/4.png"))));
+
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage() + " hello");
+            return;
+        }
+    }
+    public void resetMouseClickEvents()
+    {
+        fileButtonClicked = false;
+        pickButtonClicked = false;
+        buildButtonClicked = false;
+        researchButtonClicked = false;
+        endTurnButtonClicked = false;
+        fieldButtonClicked = false;
+        archiveButtonClicked = false;
+        archiveSectionClicked = false;
+        upgradeSectionClicked = false;
+        convertSectionClicked = false;
+        fileSectionClicked = false;
+        pickSectionClicked = false;
+        buildSectionClicked = false;
+        tier1DeckClicked = false;
+        tier2DeckClicked = false;
+        tier3DeckClicked = false;
+        researchingCardsClicked = false;
+        first6Clicked = false;
+        yesButtonClicked = false;
+        noButtonClicked = false;
+    }
+
+    public void resetVisibleFlags()
+    {
+        fileButtonVisible = false;
+        pickButtonVisible = false;
+        buildButtonVisible = false;
+        researchButtonVisible = false;
+        endTurnButtonVisible = false;
+        fieldButtonVisible = false;
+        archiveButtonVisible = false;
+        yesButtonVisible = false;
+        noButtonVisible = false;
     }
 
     /**
@@ -86,91 +200,74 @@ public class GamePanel extends JPanel implements MouseListener
     /**
      * runs the player's turn
      */
-    public void playerTurn(Player p)
-    {
-        if (endGameConditions() == true)
-            gameEnd = true;
-        if ((gameEnd == false) || (gameEnd == true && currentPlayer != firstPlayer))
-        {
-            setPrompt("Please choose an action:");
-            //repaint()
-//            waitFor4ActionClick();
-            if (fileButtonClicked == true)
-            {
-                setPrompt("Please choose a card on the field to file:");
-                //wait for player input, will write code later
-
-                int num = getCardNumberPicked();
-                p.file(pickedCard(num));
-            }
-            else if (pickButtonClicked == true)
-            {
-                setPrompt("Please choose marble from the energy dispenser to add to your ring:");
-                //wait for player input, will write code later
-                int num = getMarbleNumberPicked();
-                p.pickFrom6(num, energyDispenser.getFirstSix());
-            }
-            else if (buildButtonClicked == true)
-            {
-                setPrompt("Please choose a card from the field or your archive to build:");
-                //wait for player input to pick either field or archive, will write code later
-
-                if (fieldButtonClicked == true)
-                {
-                    setPrompt("Please choose a card from the field to build:");
-                    //wait for player input to pick either field or archive, will write code later
-
-                    int num = getCardNumberPicked();
-                    EnergyRing temp = p.getPlayerRingClass();
-                    p.build(temp.getNumOfRed(), temp.getNumOfBlue(), temp.getNumOfYellow(), temp.getNumOfBlack(), pickedCard(num));
-                }
-                else if (archiveButtonClicked == true)
-                {
-                    setPrompt("Please choose a card from your archive to build:");
-                    //wait for player input to pick either field or archive, will write code later
-                }
-            }
-            else if (researchButtonClicked == true)
-            {
-                setPrompt("Please choose a tier of cards to research from");
-                //wait for player input to pick either field or archive, will write code later
-
-
-            }
-
-        }
-    }
+//    public void playerTurn(Player p) {
+//        if (endGameConditions() == true)
+//            gameEnd = true;
+//        if ((gameEnd == false) || (gameEnd == true && currentPlayer != firstPlayer)) {
+//            setPrompt("Please choose an action:");
+//            //repaint()
+////            waitFor4ActionClick();
+//            if (fileButtonClicked == true) {
+//                setPrompt("Please choose a card on the field to file:");
+//                //wait for player input, will write code later
+//
+//                int num = getCardNumberPicked();
+//                p.file(pickedCard(num));
+//            } else if (pickButtonClicked == true) {
+//                setPrompt("Please choose marble from the energy dispenser to add to your ring:");
+//                //wait for player input, will write code later
+//                int num = getMarbleNumberPicked();
+//                p.pickFrom6(num, energyDispenser.getFirstSix());
+//            } else if (buildButtonClicked == true) {
+//                setPrompt("Please choose a card from the field or your archive to build:");
+//                //wait for player input to pick either field or archive, will write code later
+//
+//                if (fieldButtonClicked == true) {
+//                    setPrompt("Please choose a card from the field to build:");
+//                    //wait for player input to pick either field or archive, will write code later
+//
+//                    int num = getCardNumberPicked();
+//                    EnergyRing temp = p.getPlayerRingClass();
+//                    p.build(temp.getNumOfRed(), temp.getNumOfBlue(), temp.getNumOfYellow(), temp.getNumOfBlack(), pickedCard(num));
+//                } else if (archiveButtonClicked == true) {
+//                    setPrompt("Please choose a card from your archive to build:");
+//                    //wait for player input to pick either field or archive, will write code later
+//                }
+//            } else if (researchButtonClicked == true) {
+//                setPrompt("Please choose a tier of cards to research from");
+//                //wait for player input to pick either field or archive, will write code later
+//
+//
+//            }
+//
+//        }
+//    }
 
 
     /**
      * returns the currentPlayer
      */
-    public Player getCurrentPlayer()
-    {
+    public Player getCurrentPlayer() {
         return currentPlayer;
     }
 
     /**
-     This method sets the order and returns the current player, and if its the last player
-     then it starts back to 1 and will go through 1-4
+     * This method sets the order and returns the current player, and if its the last player
+     * then it starts back to 1 and will go through 1-4
      */
-    public void setNextPlayer()
-    {
+    public void setNextPlayer() {
         currentPlayer = playerList.get((playerList.indexOf(currentPlayer) + 1) % playerList.size());
     }
 
     /**
      * What happens after the game ends, calls the calculate scores method, and returns an arrayList of the ranking, and tiebreakers
      */
-    public ArrayList<Player> endGame()
-    {
+    public ArrayList<Player> endGame() {
         ArrayList<Player> ranking = new ArrayList<>(playerList);
         ranking.sort(Comparator.comparing(Player::getScore).reversed());
         //If any players have the same two scores, sort only those players by their number of cards
-        for (int i = 0; i < ranking.size() - 1; i++)
-        {
-            if (ranking.get(i).getScore() == ranking.get(i + 1).getScore())
-            {
+        for (int i = 0; i < ranking.size() - 1; i++) {
+            if (ranking.get(i).getScore() == ranking.get(i + 1).getScore()) {
                 int personOneCards = ranking.get(i).getToolBar().getCards().values().stream().mapToInt(ArrayList::size).sum();
                 int personTwoCards = ranking.get(i + 1).getToolBar().getCards().values().stream().mapToInt(ArrayList::size).sum();
                 if (personOneCards < personTwoCards)
@@ -179,14 +276,11 @@ public class GamePanel extends JPanel implements MouseListener
             }
         }
         //If any players have the same score and number of cards, sort only those players by the number of marbles in their reserve
-        for (int i = 0; i < ranking.size() - 1; i++)
-        {
-            if (ranking.get(i).getScore() == ranking.get(i + 1).getScore())
-            {
+        for (int i = 0; i < ranking.size() - 1; i++) {
+            if (ranking.get(i).getScore() == ranking.get(i + 1).getScore()) {
                 int personOneCards = ranking.get(i).getToolBar().getCards().values().stream().mapToInt(ArrayList::size).sum();
                 int personTwoCards = ranking.get(i + 1).getToolBar().getCards().values().stream().mapToInt(ArrayList::size).sum();
-                if (personOneCards == personTwoCards)
-                {
+                if (personOneCards == personTwoCards) {
                     int personOneMarbles = ranking.get(i).getEnergyRing().size();
                     int personTwoMarbles = ranking.get(i + 1).getEnergyRing().size();
                     if (personOneMarbles < personTwoMarbles)
@@ -195,18 +289,14 @@ public class GamePanel extends JPanel implements MouseListener
             }
         }
         //If finally, any players are still tied, compare only those players using the compareTo method in the Player class. THe greater number is ranked above
-        for (int i = 0; i < ranking.size() - 1; i++)
-        {
-            if (ranking.get(i).getScore() == ranking.get(i + 1).getScore())
-            {
+        for (int i = 0; i < ranking.size() - 1; i++) {
+            if (ranking.get(i).getScore() == ranking.get(i + 1).getScore()) {
                 int personOneCards = ranking.get(i).getToolBar().getCards().values().stream().mapToInt(ArrayList::size).sum();
                 int personTwoCards = ranking.get(i + 1).getToolBar().getCards().values().stream().mapToInt(ArrayList::size).sum();
-                if (personOneCards == personTwoCards)
-                {
+                if (personOneCards == personTwoCards) {
                     int personOneMarbles = ranking.get(i).getEnergyRing().size();
                     int personTwoMarbles = ranking.get(i + 1).getEnergyRing().size();
-                    if (personOneMarbles == personTwoMarbles)
-                    {
+                    if (personOneMarbles == personTwoMarbles) {
                         if (ranking.get(i).compareTo(ranking.get(i + 1)) < 0)
                             Collections.swap(ranking, i, i + 1);
                     }
@@ -219,8 +309,7 @@ public class GamePanel extends JPanel implements MouseListener
     /**
      * checks to see if the game will end
      */
-    public boolean endGameConditions()
-    {
+    public boolean endGameConditions() {
         //Check all players and their cards. Return true if any player has at least four cards where the GizmoLevel is LEVEL3
         for (Player p : playerList) {
             Toolbar playerToolbar = p.getToolBar();
@@ -244,69 +333,51 @@ public class GamePanel extends JPanel implements MouseListener
     /**
      * @return the number of the card that the player picked. the boolean card_clicked is set to true in the mouseListener
      */
-    public int getCardNumberPicked()
-    {
-        if (card1Clicked == true)
-            return 1;
-        else if (card2Clicked == true)
-            return 2;
-        else if (card3Clicked == true)
-            return 3;
-        else if (card4Clicked == true)
-            return 4;
-        else if (card5Clicked == true)
-            return 5;
-        else if (card6Clicked == true)
-            return 6;
-        else if (card7Clicked == true)
-            return 7;
-        else if (card8Clicked == true)
-            return 8;
-        else if (card9Clicked == true)
-            return 9;
-        return 1;
-    }
 
 
-    public GizmoCard pickedCard(int cardClicked)
-    {
-        switch (cardClicked)
-        {
-            case 1: return deck.getTier1()[0];
-            case 2: return deck.getTier1()[1];
-            case 3: return deck.getTier1()[2];
-            case 4: return deck.getTier1()[3];
-            case 5: return deck.getTier2()[0];
-            case 6: return deck.getTier2()[1];
-            case 7: return deck.getTier2()[2];
-            case 8: return deck.getTier3()[0];
-            case 9: return deck.getTier3()[1];
+    public GizmoCard pickedCard(int cardClicked) {
+        switch (cardClicked) {
+            case 1:
+                return deck.getTier1()[0];
+            case 2:
+                return deck.getTier1()[1];
+            case 3:
+                return deck.getTier1()[2];
+            case 4:
+                return deck.getTier1()[3];
+            case 5:
+                return deck.getTier2()[0];
+            case 6:
+                return deck.getTier2()[1];
+            case 7:
+                return deck.getTier2()[2];
+            case 8:
+                return deck.getTier3()[0];
+            case 9:
+                return deck.getTier3()[1];
         }
-        return deck.getTier1()[0];
+        return null;
     }
 
-    public int getMarbleNumberPicked()
+    public BufferedImage playerNumberToImage(Player currentPlayer)
     {
-        if (marble1Clicked == true)
-            return 1;
-        else if (marble2Clicked == true)
-            return 2;
-        else if (marble3Clicked == true)
-            return 3;
-        else if (marble4Clicked == true)
-            return 4;
-        else if (marble5Clicked == true)
-            return 5;
-        else if (marble6Clicked == true)
-            return 6;
-        return 1;
+        switch (currentPlayer.getPlayerNumber())
+        {
+            case 1: return playerOne;
+            case 2: return playerTwo;
+            case 3: return playerThree;
+            case 4: return playerFour;
+        }
+        return playerOne;
     }
+
 
     public void paint(Graphics g)
     {
 //        super.paint(g);
 //        Menu Screen
-        g.drawImage(start, 0, 0, 1366, 768, null);
+        if (gameStart == false)
+            g.drawImage(start, 0, 0, 1600, 900, null);
 
 //        Rules downloaded
         if (rulesButtonClicked == true)
@@ -314,15 +385,1071 @@ public class GamePanel extends JPanel implements MouseListener
 
 //        Game Screen
         if (gameStart == true) {
-            g.drawImage(gameScreen, 0, 0, 1366, 768, null);
-            fileButtonVisible = true; pickButtonVisible = true; buildButtonVisible = true; researchButtonVisible = true;
-        }
-        // four buttons
 
-        //g.drawString(prompt, 800, 700); // just made some random coordinates for where the prompt is gonna be, change later
+            g.drawImage(gameScreen, 0, 0, 1600, 900, null);
+            fileButtonVisible = true;
+            pickButtonVisible = true;
+            buildButtonVisible = true;
+            researchButtonVisible = true;
+
+            int lengthBetween = smallTitleLength + (int) (smallCardWidth * 4.2);
+
+            //prompt
+            g.drawImage(promptBox, promptBoxX, promptBoxY, promptBoxWidth, promptBoxLength, null);
+            g.drawImage(prompt, promptX, promptY, promptWidth, promptLength, null);
+            g.drawImage(endTurnButton, promptX+(int)(cardWidth*4.0), promptY+37, (int)(cardWidth*1.2), (int)(cardWidth*0.4), null);
+            Font f = new Font("Serif", Font.BOLD, 20);
+            g.setFont(f);
+            g.setColor(Color.BLACK);
+            g.drawString("Please choose a card to Research. Thank you for choosing FedEx", promptX+3, promptY+20);
+
+            //Current player number
+            g.drawImage(playerNumberToImage(currentPlayer), archTitleX+140, archTitleY+2, 20, 25, null);
+            //other player numbers
+            int x12 = smallTitleX + (int)(smallCardWidth*2)-15;
+            int y12 = smallTitleY;
+            for (int i = 0; i < 4; i++)
+            {
+                g.drawImage(playerNumberToImage(playerList.get(i)), x12, y12, 18, 23, null);
+                y12 += lengthBetween;
+            }
+
+
+            //Energy Ring
+            g.drawImage(energyRing, erX, erY, erWidth, erWidth, null);
+
+            //Archive
+            int temp = archX;
+            for (int i = 0; i < currentPlayer.getArchive().size(); i++) {
+                g.drawImage(currentPlayer.getArchive().get(i).getImage(), temp, archY, archWidth, archWidth, null);
+                temp += cardWidth;
+            }
+
+            //Toolbar
+            g.drawImage(firstPlayerTB, tbX, tbY, tbWidth, tbLength, null);
+
+            //Cards in toolbar
+            int y = tbY + tbLength;
+            for (int i = 0; i < currentPlayer.getToolBar().getCards().get(GizmoType.UPGRADE).size(); i++) {
+                g.drawImage(currentPlayer.getToolBar().getCards().get(GizmoType.UPGRADE).get(i).getImage(), tbX, y, cardWidth, cardWidth, null);
+                y += ownedCardsHeaderLength;
+            }
+
+            int x = tbX + tbSectionWidth;
+            y = tbY + tbLength;
+            for (int i = 0; i < currentPlayer.getToolBar().getCards().get(GizmoType.CONVERTOR).size(); i++) {
+                g.drawImage(currentPlayer.getToolBar().getCards().get(GizmoType.CONVERTOR).get(i).getImage(), x, y, cardWidth, cardWidth, null);
+                y += ownedCardsHeaderLength;
+            }
+
+            x = tbX + tbSectionWidth * 2;
+            y = tbY + tbLength;
+            for (int i = 0; i < currentPlayer.getToolBar().getCards().get(GizmoType.FILE).size(); i++) {
+                g.drawImage(currentPlayer.getToolBar().getCards().get(GizmoType.FILE).get(i).getImage(), x, y, cardWidth, cardWidth, null);
+                y += ownedCardsHeaderLength;
+            }
+
+            x = tbX + tbSectionWidth * 3;
+            y = tbY + tbLength;
+            for (int i = 0; i < currentPlayer.getToolBar().getCards().get(GizmoType.PICK).size(); i++) {
+                g.drawImage(currentPlayer.getToolBar().getCards().get(GizmoType.PICK).get(i).getImage(), x, y, cardWidth, cardWidth, null);
+                y += ownedCardsHeaderLength;
+            }
+
+            x = tbX + tbSectionWidth * 4;
+            y = tbY + tbLength;
+            for (int i = 0; i < currentPlayer.getToolBar().getCards().get(GizmoType.BUILD).size(); i++) {
+                g.drawImage(currentPlayer.getToolBar().getCards().get(GizmoType.BUILD).get(i).getImage(), x, y, cardWidth, cardWidth, null);
+                y += ownedCardsHeaderLength;
+            }
+
+
+            //Tier cards
+            g.drawImage(Rank1, tierX, tierY, cardWidth, cardWidth, null);
+            int x1 = tierX + cardWidth;
+            int y1 = tierY;
+            for (int i = 0; i < deck.getTier1().length; i++) {
+                g.drawImage(deck.getTier1()[i].getImage(), x1, y1, cardWidth, cardWidth, null);
+                x1 += cardWidth;
+            }
+
+            g.drawImage(Rank2, tierX, tierY + cardWidth, cardWidth, cardWidth, null);
+            x1 = tierX + cardWidth;
+            y1 = tierY + cardWidth;
+            for (int i = 0; i < deck.getTier2().length; i++) {
+                g.drawImage(deck.getTier2()[i].getImage(), x1, y1, cardWidth, cardWidth, null);
+                x1 += cardWidth;
+            }
+
+            g.drawImage(Rank3, tierX, tierY + cardWidth * 2, cardWidth, cardWidth, null);
+            x1 = tierX + cardWidth;
+            y1 = tierY + cardWidth * 2;
+            for (int i = 0; i < deck.getTier3().length; i++) {
+                g.drawImage(deck.getTier3()[i].getImage(), x1, y1, cardWidth, cardWidth, null);
+                x1 += cardWidth;
+            }
+
+            //promptBox
+            //Buttons
+            //4 main actions
+            if (startOfPlayerTurn == true)
+            {
+                int x3 = promptROrBCardRow1X;
+                int y3 = promptROrBCardRow1Y + (int)(cardWidth/4.0);
+                g.drawImage(fileButton, x3, y3, (int)(cardWidth*1.2), (int)(cardWidth*0.4),null);
+                x3 += (int)(cardWidth*2);
+                g.drawImage(pickButton, x3, y3, (int)(cardWidth*1.2), (int)(cardWidth*0.4),null);
+                x3 = promptROrBCardRow1X;
+                y3 += cardWidth;
+                g.drawImage(buildButton, x3, y3, (int)(cardWidth*1.2), (int)(cardWidth*0.4),null);
+                x3 += (int)(cardWidth*2);
+                g.drawImage(researchButton, x3, y3, (int)(cardWidth*1.2), (int)(cardWidth*0.4),null);
+
+            }
+
+            if (startOfPlayerTurn == false)
+            {
+                //Building
+                if (currentPlayer.getActionPicked() == 4 && cardIsClicked == true)
+                {
+                    int x2 = promptROrBCardRow1X;
+                    int y2 = promptROrBCardRow1Y + (int)(cardWidth/4.0);
+                    g.drawImage(cardClicked.getImage(), promptROrBCardRow1X+(int)(cardWidth*4), promptROrBCardRow1Y + (int)(cardWidth/4.0), cardWidth, cardWidth, null);
+                    g.drawImage(yesButton, x2, y2, (int)(cardWidth*1.2), (int)(cardWidth*0.4), null);
+                    x2 += (int)(cardWidth*2);
+                    g.drawImage(noButton, x2, y2, (int)(cardWidth*1.2), (int)(cardWidth*0.4), null);
+                }
+
+                //converting in prompt
+                if (currentPlayer.getActionPicked() == 1 && cardIsClicked == true)
+                {
+
+                    //one color to any
+                    if (getConvertMethodInPrompt(currentPlayer) == 1) {
+                        int x2 = promptROrBCardRow1X;
+                        int y2 = promptROrBCardRow1Y + (int) (cardWidth / 2.0);
+                        g.drawImage(redMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+                        x2 += cardWidth;
+
+                        g.drawImage(blueMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+                        x2 += cardWidth;
+
+                        g.drawImage(blackMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+                        x2 += cardWidth;
+
+                        g.drawImage(yellowMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+                    }
+                    //(1 or 2 to any)
+                    else if (getConvertMethodInPrompt(currentPlayer) == 2)
+                    {
+                        //player selected only 1 to any
+                        if (currentPlayer.get1Or2ConvertChoice() == 1) {
+                            int x2 = promptROrBCardRow1X;
+                            int y2 = promptROrBCardRow1Y + (int) (cardWidth / 2.0);
+                            g.drawImage(redMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+                            x2 += cardWidth;
+
+                            g.drawImage(blueMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+                            x2 += cardWidth;
+
+                            g.drawImage(blackMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+                            x2 += cardWidth;
+
+                            g.drawImage(yellowMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+                        }
+                        //player selected 2 to any
+                        else if (currentPlayer.get1Or2ConvertChoice() == 2) {
+                            int x2 = promptROrBCardRow1X;
+                            int y2 = promptROrBCardRow1Y + (int) (cardWidth / 2.0);
+                            g.drawImage(redMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+                            x2 += cardWidth;
+
+                            g.drawImage(blueMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+                            x2 += cardWidth;
+
+                            g.drawImage(blackMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+                            x2 += cardWidth;
+
+                            g.drawImage(yellowMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+//                            x2 = promptROrBCardRow1X;
+//                            y2 += (int) (cardWidth / 1.5);
+//
+//
+//                            g.drawImage(redMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+//                            x2 += cardWidth;
+//
+//                            g.drawImage(blueMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+//                            x2 += cardWidth;
+//
+//                            g.drawImage(blackMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+//                            x2 += cardWidth;
+//
+//                            g.drawImage(yellowMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+                        }
+                        else if (getConvertMethodInPrompt(currentPlayer) == 3)
+                        {
+                            int x2 = promptROrBCardRow1X;
+                            int y2 = promptROrBCardRow1Y + (int) (cardWidth / 2.0);
+                            for (int i = 0; i < getDistinctColorsInRing(currentPlayer).size(); i++)
+                            {
+                                switch(getDistinctColorsInRing(currentPlayer).get(i)) {
+                                    case MarbleColor.RED -> g.drawImage(redMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+                                    case MarbleColor.BLUE -> g.drawImage(blueMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+                                    case MarbleColor.BLACK -> g.drawImage(blackMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+                                    case MarbleColor.YELLOW -> g.drawImage(yellowMarble, x2, y2, (int) (cardWidth / 2.0), (int) (cardWidth / 2.0), null);
+                                }
+                                x2 += cardWidth;
+                            }
+                        }
+                    }
+                }
+
+                //researching in prompt
+                if (currentPlayer.getActionPicked() == 5 && cardIsClicked == false)
+                {
+                    int z = 0;
+                    int x2 = promptROrBCardRow1X;
+                    int x3 = promptROrBCardRow2X;
+
+                    Iterator<GizmoCard> iter = currentPlayer.getCardsResearching().iterator();
+                    while (z < currentPlayer.getCardsResearching().size()) {
+                        GizmoCard tempCard = iter.next();
+                        if (z < 5) {
+                            g.drawImage(tempCard.getImage(), x2, promptROrBCardRow1Y, cardWidth, cardWidth, null);
+                            x2 += cardWidth;
+                        } else if (z >= 5) {
+                            g.drawImage(tempCard.getImage(), x3, promptROrBCardRow2Y, cardWidth, cardWidth, null);
+                            x3 += cardWidth;
+                        }
+                        z++;
+                    }
+                }
+                if (currentPlayer.getActionPicked() == 5 && cardIsClicked == true)
+                {
+                    int x4 = promptROrBCardRow1X;
+                    int y4 = promptROrBCardRow1Y + (int) (cardWidth / 4.0);
+                    g.drawImage(cardClicked.getImage(), promptROrBCardRow1X + (int) (cardWidth * 4), promptROrBCardRow1Y + (int) (cardWidth / 4.0), cardWidth, cardWidth, null);
+                    g.drawImage(fileButton, x4, y4, (int) (cardWidth * 1.2), (int) (cardWidth * 0.4), null);
+                    x4 += (int) (cardWidth * 2);
+                    g.drawImage(buildButton, x4, y4, (int) (cardWidth * 1.2), (int) (cardWidth * 0.4), null);
+                }
+            }
+
+
+            //Energy Ring marbles
+            int x4 = erMarbleR1X;
+            int y4 = erMarbleR1Y;
+            int x5 = erMarbleR1X;
+            int y5 = erMarbleR1Y + erMarbleWidth;
+            int x6 = erMarbleR1X;
+            int y6 = erMarbleR1Y + erMarbleWidth * 2;
+
+            int z = 0;
+
+            while (z < currentPlayer.getEnergyRing().size())
+            {
+                Marble tempMarble = currentPlayer.getEnergyRing().get(z);
+                if (z < 4)
+                {
+                    g.drawImage(marbleToColor(tempMarble.getColor()), x4, y4, erMarbleWidth, erMarbleWidth, null);
+                    x4 += erMarbleWidth;
+                }
+                else if (4 <= z && z < 8) {
+                    g.drawImage(marbleToColor(tempMarble.getColor()), x5, y5, erMarbleWidth, erMarbleWidth, null);
+                    x5 += erMarbleWidth;
+                } else if (8 <= z) {
+                    g.drawImage(marbleToColor(tempMarble.getColor()), x6, y6, erMarbleWidth, erMarbleWidth, null);
+                    x6 += erMarbleWidth;
+                }
+                z++;
+            }
+
+            //EnergyDispenser marbles
+            int x7 = first6X;
+            int y7 = first6Y;
+            for (int i = 0; i < energyDispenser.getFirstSix().size(); i++) {
+                g.drawImage(marbleToColor(energyDispenser.getFirstSix().get(i).getColor()), x7, y7, first6Width, first6Width, null);
+                y7 += first6Width;
+            }
+
+
+            //Victory point tokens
+            int x8 = VPX;
+            int y8 = VPY;
+            int x9 = VPX;
+            int y9 = VPY + VPlength;
+            for (int i = 0; i < currentPlayer.getBonusVictoryPoints().size(); i++) {
+                if (i < 6) {
+                    g.drawImage(numberToBonusVPToken(currentPlayer.getBonusVictoryPoints().get(i).getValue()), x8, y8, VPWidth, VPlength, null);
+                    x8 += VPWidth;
+                }
+                if (i >= 6) {
+                    g.drawImage(numberToBonusVPToken(currentPlayer.getBonusVictoryPoints().get(i).getValue()), x9, y9, VPWidth, VPlength, null);
+                    x9 += VPWidth;
+                }
+            }
+
+            //OtherPlayer toolbars
+            int playerSmallTitleY = smallTitleY;
+            int playerSmallERY = smallERY;
+            int playerSmallTBY = smallTBY;
+            int playerSmallEMR1Y = smallEMR1Y;
+            int playerSmallVPY = smallVPY;
+            for (int h = 0; h < 4; h++)
+            {
+                Player otherPlayer = playerList.get(h);
+                if (otherPlayer != currentPlayer) {
+                    int x10 = smallTitleX;
+                    int y10 = playerSmallTitleY + smallTitleLength;
+
+                    //energyRing
+                    g.drawImage(energyRing, smallERX, playerSmallERY, smallERWidth, smallERWidth, null);
+
+                    //toolbar
+                    g.drawImage(otherPlayerTB, smallTBX, playerSmallTBY, smallTBWidth, smallTBLength, null);
+
+                    //Archive
+                    for (int k = 0; k < otherPlayer.getArchive().size(); k++) {
+                        g.drawImage(otherPlayer.getArchive().get(k).getImage(), x10, y10, smallCardWidth, smallCardWidth, null);
+                        x10 += smallCardWidth;
+                        if (k % 3 == 2) {
+                            x10 = smallTitleX;
+                            y10 += smallCardWidth;
+                        }
+                    }
+
+                    //cards in toolbar
+                    x = smallTBX;
+                    y = playerSmallTBY + smallTBLength;
+                    for (int i = 0; i < otherPlayer.getToolBar().getCards().get(GizmoType.UPGRADE).size(); i++) {
+                        g.drawImage(otherPlayer.getToolBar().getCards().get(GizmoType.UPGRADE).get(i).getImage(), x, y, smallCardWidth, smallCardWidth, null);
+                        y += smallCardHeaderLength;
+                    }
+
+                    x = smallTBX + smallTBSectionWidth;
+                    y = playerSmallTBY + smallTBLength;
+                    for (int i = 0; i < otherPlayer.getToolBar().getCards().get(GizmoType.CONVERTOR).size(); i++) {
+                        g.drawImage(otherPlayer.getToolBar().getCards().get(GizmoType.CONVERTOR).get(i).getImage(), x, y, smallCardWidth, smallCardWidth, null);
+                        y += smallCardHeaderLength;
+                    }
+
+                    x = smallTBX + smallTBSectionWidth * 2;
+                    y = playerSmallTBY + smallTBLength;
+                    for (int i = 0; i < otherPlayer.getToolBar().getCards().get(GizmoType.FILE).size(); i++) {
+                        g.drawImage(otherPlayer.getToolBar().getCards().get(GizmoType.FILE).get(i).getImage(), x, y, smallCardWidth, smallCardWidth, null);
+                        y += smallCardHeaderLength;
+                    }
+
+                    x = smallTBX + smallTBSectionWidth * 3;
+                    y = playerSmallTBY + smallTBLength;
+                    for (int i = 0; i < otherPlayer.getToolBar().getCards().get(GizmoType.PICK).size(); i++) {
+                        g.drawImage(otherPlayer.getToolBar().getCards().get(GizmoType.PICK).get(i).getImage(), x, y, smallCardWidth, smallCardWidth, null);
+                        y += smallCardHeaderLength;
+                    }
+
+                    x = smallTBX + smallTBSectionWidth * 4;
+                    y = playerSmallTBY + smallTBLength;
+                    for (int i = 0; i < otherPlayer.getToolBar().getCards().get(GizmoType.BUILD).size(); i++) {
+                        g.drawImage(otherPlayer.getToolBar().getCards().get(GizmoType.BUILD).get(i).getImage(), x, y, smallCardWidth, smallCardWidth, null);
+                        y += smallCardHeaderLength;
+                    }
+
+                    //small energy ring marbles
+                    x4 = smallEMR1X;
+                    y4 = playerSmallEMR1Y;
+                    z = 0;
+                    while (z < otherPlayer.getEnergyRing().size()) {
+                        Marble tempMarble = otherPlayer.getEnergyRing().get(z);
+
+                        g.drawImage(marbleToColor(tempMarble.getColor()), x4, y4, smallEMWidth, smallEMWidth, null);
+                        x4 += smallEMWidth;
+
+                        if (z % 4 == 3) {
+                            x4 = smallEMR1X;
+                            y4 += smallEMWidth;
+                        }
+                        z++;
+                    }
+
+                    //small victory point tokens
+                    x8 = smallVPX;
+                    y8 = playerSmallVPY;
+
+                    for (int j = 0; j < otherPlayer.getBonusVictoryPoints().size(); j++) {
+                        g.drawImage(numberToBonusVPToken(otherPlayer.getBonusVictoryPoints().get(j).getValue()), x8, y8, smallVPWidth, smallVPlength, null);
+                        x8 += smallVPWidth;
+
+                        if (j % 3 == 2) {
+                            x8 = smallVPX;
+                            y8 += smallVPlength;
+                        }
+                    }
+                }
+                playerSmallTitleY += lengthBetween;
+                playerSmallERY += lengthBetween;
+                playerSmallTBY += lengthBetween;
+                playerSmallEMR1Y += lengthBetween;
+                playerSmallVPY += lengthBetween;
+            }
+
+        }
 
     }
 
+
+    // four buttons
+
+    //g.drawString(prompt, 800, 700); // just made some random coordinates for where the prompt is gonna be, change later
+
+
+    public void initializeAllXY()
+    {
+        cardWidth = 105; erX = 0; erY = 0; erWidth = 150; archTitleY = 0; archTitleLength = 30; first6X = 1020; first6Y = 440;
+        VPTitleX = 950; VPTitleLength = 20; VPWidth = 30; VPlength = 45;
+        promptBoxX = (int)(cardWidth*5);
+        smallTitleX = 1150; smallTitleY = 0; smallTBY = 0; smallERY = 0;
+
+        smallCardWidth = (int)(cardWidth/2.5); ownedCardsHeaderLength = (int)(cardWidth * 2.0 / 7);
+        erMarbleR1X = (int)(erWidth/8.0*2); erMarbleR1Y = (int)(erWidth/8.0*3); erMarbleWidth = (int)(erWidth/8.0);
+        archTitleX = erX+erWidth;  archX = erX+erWidth; archY = archTitleLength; archWidth = cardWidth;
+        tbX = erX; tbY = erY+erWidth; tbSectionWidth = cardWidth; tbWidth = (int)(cardWidth*(5+(4.0/7))); tbLength = (int)(cardWidth*(3.0/7));
+        first6Width = erMarbleWidth;
+        tierX = tbX; tierY = tbY+tbLength+9*ownedCardsHeaderLength+cardWidth;
+        VPTitleY = tbY; VPX = VPTitleX; VPY = VPTitleY+VPTitleLength;
+
+        promptBoxY = tierY; promptBoxWidth = (int)(1135-promptBoxX); promptBoxLength = cardWidth*3; promptX = promptBoxX+(int)(cardWidth/4.0);
+        promptY = promptBoxY+(int)(cardWidth/4.0); promptWidth = promptBoxWidth-(int)(cardWidth*0.25)-30;
+        promptLength = cardWidth-70; promptROrBCardRow1X = promptBoxX+(int)(cardWidth/2.0); promptROrBCardRow1Y = tierY+cardWidth;
+        promptROrBCardRow2X = promptROrBCardRow1X; promptROrBCardRow2Y = promptROrBCardRow1Y+cardWidth;
+
+        smallTitleWidth = smallCardWidth*3+20; smallTitleLength = smallCardWidth+5; smallTBX = smallTitleX+smallTitleWidth;
+        smallTBSectionWidth = smallCardWidth; smallTBWidth = (int)(smallCardWidth*(5+(5.0/7))); smallTBLength = (int)(smallCardWidth*(3.0/7));
+
+        smallCardHeaderLength = (int)(smallCardWidth * 2.0 / 7);
+        smallERX = smallTBX + smallTBWidth;  smallERWidth = (int)(erWidth/2.25); smallEMR1X = smallERX+(int)(smallERWidth/8.0*2);
+        smallEMR1Y = (int)(smallERWidth/8.0*3); smallEMWidth = (int)(smallERWidth/8.0);
+        smallVPX = smallERX; smallVPY = smallERY+smallERWidth; smallVPWidth = (int)(VPWidth/1.5); smallVPlength = (int)(VPlength/1.5);
+
+        testDrawPopulate(1);
+        testDrawPopulate(2);
+        testDrawPopulate(3);
+        testDrawPopulate(4);
+
+    }
+
+    public void testDrawPopulate(int playerNumber)
+    {
+        //prompt status
+        playerList.get(playerNumber-1).setActionPicked(1);
+        playerList.get(playerNumber-1).setConvertMethodClicked(3);
+        playerList.get(playerNumber-1).set1Or2ConvertChoice(2);
+        try {
+            cardClicked = new GizmoCard(MarbleColor.YELLOW, 5,5, GizmoType.BUILD, "buildthisorthatfile", 5, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Yellow5Rank3.png"))));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        cardIsClicked = true;
+        startOfPlayerTurn = false;
+
+        //Archive
+        ArrayList<GizmoCard> arrList = new ArrayList<GizmoCard>();
+        playerList.get(playerNumber-1).setArchive(arrList);
+        for (int i = 0; i < 8; i++) {
+            try {
+                playerList.get(playerNumber-1).getArchive().add(new GizmoCard(MarbleColor.YELLOW, 1,1, GizmoType.UPGRADE, "e1f1", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Yellow9Rank1.png")))));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        //Cards in Toolbar
+        ArrayList<GizmoCard> list = new ArrayList<GizmoCard>();
+        for (int i = 0; i < 10; i++) {
+            try {
+                list.add(new GizmoCard(MarbleColor.BLACK, 1,1, GizmoType.UPGRADE, "e1f1", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Black9Rank1.png")))));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        for (int i = 0; i < 10; i++)
+            playerList.get(playerNumber-1).getToolBar().getCards().put(GizmoType.UPGRADE, list);
+
+        list = new ArrayList<GizmoCard>();
+        for (int i = 0; i < 10; i++) {
+            try {
+                list.add(new GizmoCard(MarbleColor.BLACK, 1,1, GizmoType.CONVERTOR, "convert1toany", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Black7Rank1.png")))));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        for (int i = 0; i < 10; i++)
+            playerList.get(playerNumber-1).getToolBar().getCards().put(GizmoType.CONVERTOR, list);
+
+        list = new ArrayList<GizmoCard>();
+        for (int i = 0; i < 10; i++) {
+            try {
+                list.add(new GizmoCard(MarbleColor.BLACK, 1, 1, GizmoType.FILE, "filepick1from6", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Black3Rank1.png")))));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        for (int i = 0; i < 10; i++)
+            playerList.get(playerNumber-1).getToolBar().getCards().put(GizmoType.FILE, list);
+
+        list = new ArrayList<GizmoCard>();
+        for (int i = 0; i < 10; i++) {
+            try {
+                list.add(new GizmoCard(MarbleColor.BLUE, 2,2, GizmoType.PICK, "pickthisorthatpickrandom", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Blue1Rank2.png")))));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        for (int i = 0; i < 10; i++)
+            playerList.get(playerNumber-1).getToolBar().getCards().put(GizmoType.PICK, list);
+
+
+        list = new ArrayList<GizmoCard>();
+        for (int i = 0; i < 10; i++) {
+            try {
+                list.add(new GizmoCard(MarbleColor.BLACK, 1, 1, GizmoType.BUILD, "buildpick1from6", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Black2Rank1.png")))));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        for (int i = 0; i < 10; i++)
+            playerList.get(playerNumber-1).getToolBar().getCards().put(GizmoType.BUILD, list);
+
+        playerList.get(playerNumber-1).setCardsResearching(new ArrayList<GizmoCard>());
+        for (int i = 0; i < 10; i++) {
+            try {
+                playerList.get(playerNumber-1).addCardsResearching(new GizmoCard(MarbleColor.BLACK, 1, 1, GizmoType.BUILD, "buildpick1from6", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Black2Rank1.png")))));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        // Energy Ring Marble
+        playerList.get(playerNumber-1).getPlayerRingClass().setEnergyRing(new ArrayList<Marble>());
+        for (int i = 0; i < 12; i++)
+            playerList.get(playerNumber-1).getPlayerRingClass().addMarble(new Marble(MarbleColor.RED));
+
+        //Victory point tokens
+        playerList.get(playerNumber-1).setBonusVP(new ArrayList<BonusVictoryPoint>());
+        playerList.get(playerNumber-1).addBonusVPTokens(new BonusVictoryPoint(5));
+        playerList.get(playerNumber-1).addBonusVPTokens(new BonusVictoryPoint(5));
+        playerList.get(playerNumber-1).addBonusVPTokens(new BonusVictoryPoint(5));
+        playerList.get(playerNumber-1).addBonusVPTokens(new BonusVictoryPoint(5));
+        playerList.get(playerNumber-1).addBonusVPTokens(new BonusVictoryPoint(1));
+        playerList.get(playerNumber-1).addBonusVPTokens(new BonusVictoryPoint(1));
+        playerList.get(playerNumber-1).addBonusVPTokens(new BonusVictoryPoint(1));
+        playerList.get(playerNumber-1).addBonusVPTokens(new BonusVictoryPoint(1));
+
+        //small cards in toolbar
+        list = new ArrayList<GizmoCard>();
+        for (int i = 0; i < 10; i++) {
+            try {
+                list.add(new GizmoCard(MarbleColor.BLACK, 1,1, GizmoType.UPGRADE, "e1f1", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Black9Rank1.png")))));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        for (int i = 0; i < 10; i++)
+            playerList.get(playerNumber-1).getToolBar().getCards().put(GizmoType.UPGRADE, list);
+
+        list = new ArrayList<GizmoCard>();
+        for (int i = 0; i < 10; i++) {
+            try {
+                list.add(new GizmoCard(MarbleColor.BLACK, 1,1, GizmoType.CONVERTOR, "convert1toany", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Black7Rank1.png")))));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        for (int i = 0; i < 10; i++)
+            playerList.get(playerNumber-1).getToolBar().getCards().put(GizmoType.CONVERTOR, list);
+
+        list = new ArrayList<GizmoCard>();
+        for (int i = 0; i < 10; i++) {
+            try {
+                list.add(new GizmoCard(MarbleColor.BLACK, 1, 1, GizmoType.FILE, "filepick1from6", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Black3Rank1.png")))));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        for (int i = 0; i < 10; i++)
+            playerList.get(playerNumber-1).getToolBar().getCards().put(GizmoType.FILE, list);
+
+        list = new ArrayList<GizmoCard>();
+        for (int i = 0; i < 10; i++) {
+            try {
+                list.add(new GizmoCard(MarbleColor.BLUE, 2,2, GizmoType.PICK, "pickthisorthatpickrandom", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Blue1Rank2.png")))));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        for (int i = 0; i < 10; i++)
+            playerList.get(playerNumber-1).getToolBar().getCards().put(GizmoType.PICK, list);
+
+
+        list = new ArrayList<GizmoCard>();
+        for (int i = 0; i < 10; i++) {
+            try {
+                list.add(new GizmoCard(MarbleColor.BLACK, 1, 1, GizmoType.BUILD, "buildpick1from6", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Black2Rank1.png")))));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        for (int i = 0; i < 10; i++)
+            playerList.get(playerNumber-1).getToolBar().getCards().put(GizmoType.BUILD, list);
+
+        //SmallArchive
+        ArrayList<GizmoCard> arrayList = new ArrayList<GizmoCard>();
+        playerList.get(playerNumber-1).setArchive(arrayList);
+        for (int h = 0; h < 8; h++) {
+            try {
+                playerList.get(playerNumber-1).getArchive().add(new GizmoCard(MarbleColor.YELLOW, 1,1, GizmoType.UPGRADE, "e1f1", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCards/Yellow9Rank1.png")))));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
+
+//    public int getDisplayPromptChoice(int displayPromptChoice)
+//    {
+//        switch (displayPromptChoice)
+//        {
+//            case 1: ;
+//            case 2: ;
+//            case 3: ;
+//            case 4: ;
+//            case 5: ;
+//            case 6: ;
+//        }
+//    }
+
+    public void initializeAllSectionCoord(TreeMap<String, int[]> map)
+    {
+        //archive
+        int[] coord = new int[4];
+        coord[0] = archX;
+        coord[1] = archY;
+        coord[2] = archX+(int)(cardWidth*9);
+        coord[3] = archY+cardWidth;
+        map.put("Archive", coord);
+
+        //upgrade cards
+        coord = new int[4];
+        coord[0] = tbX;
+        coord[1] = tbY + tbLength;
+        coord[2] = tbX + tbSectionWidth;
+        coord[3] = tbY + (int)(ownedCardsHeaderLength*9) + cardWidth;
+        map.put("UpgradeCards", coord);
+
+        //convert cards
+        coord = new int[4];
+        coord[0] = tbX + tbSectionWidth;
+        coord[1] = tbY + tbLength;
+        coord[2] = tbX + tbSectionWidth*2;
+        coord[3] = tbY + (int)(ownedCardsHeaderLength*9) + cardWidth;
+        map.put("ConvertCards", coord);
+
+        //File cards
+        coord = new int[4];
+        coord[0] = tbX + tbSectionWidth*2;
+        coord[1] = tbY + tbLength;
+        coord[2] = tbX + tbSectionWidth*3;
+        coord[3] = tbY + (int)(ownedCardsHeaderLength*9) + cardWidth;
+        map.put("FileCards", coord);
+
+        //Pick cards
+        coord = new int[4];
+        coord[0] = tbX + tbSectionWidth*3;
+        coord[1] = tbY + tbLength;
+        coord[2] = tbX + tbSectionWidth*4;
+        coord[3] = tbY + (int)(ownedCardsHeaderLength*9) + cardWidth;
+        map.put("PickCards", coord);
+
+        //Build cards
+        coord = new int[4];
+        coord[0] = tbX + tbSectionWidth*4;
+        coord[1] = tbY + tbLength;
+        coord[2] = tbX + tbSectionWidth*5;
+        coord[3] = tbY + (int)(ownedCardsHeaderLength*9) + cardWidth;
+        map.put("BuildCards", coord);
+
+        //Tier1 cards
+        coord = new int[4];
+        coord[0] = tierX;
+        coord[1] = tierY;
+        coord[2] = tierX + cardWidth*5;
+        coord[3] = tierY + cardWidth;
+        map.put("Tier1Cards", coord);
+
+        //Tier2 cards
+        coord = new int[4];
+        coord[0] = tierX;
+        coord[1] = tierY + cardWidth;
+        coord[2] = tierX + cardWidth*4;
+        coord[3] = tierY + cardWidth*2;
+        map.put("Tier2Cards", coord);
+
+        //Tier3 cards
+        coord = new int[4];
+        coord[0] = tierX;
+        coord[1] = tierY + cardWidth*2;
+        coord[2] = tierX + cardWidth*3;
+        coord[3] = tierY + cardWidth*3;
+        map.put("Tier3Cards", coord);
+
+        //First 6 marbles
+        coord = new int[4];
+        coord[0] = first6X;
+        coord[1] = first6Y;
+        coord[2] = first6X + (int)(first6Width*6);
+        coord[3] = tierY + first6Width;
+        map.put("First6Marbles", coord);
+
+        //Button1 - top left
+        coord = new int[4];
+        coord[0] = promptROrBCardRow1X;
+        coord[1] = promptROrBCardRow1Y + (int)(cardWidth/4.0);
+        coord[2] = coord[0] + (int)(cardWidth*1.2);
+        coord[3] = coord[1] + (int)(cardWidth*0.4);
+        map.put("Button1", coord);
+
+        //Button2 - top Right
+        coord = new int[4];
+        coord[0] = promptROrBCardRow1X + (int)(cardWidth*2);
+        coord[1] = promptROrBCardRow1Y + (int)(cardWidth/4.0);
+        coord[2] = coord[0] + (int)(cardWidth*1.2);
+        coord[3] = coord[1] + (int)(cardWidth*0.4);
+        map.put("Button2", coord);
+
+        //Button3 - bottom left
+        coord = new int[4];
+        coord[0] = promptROrBCardRow1X;
+        coord[1] = promptROrBCardRow1Y + (int)(cardWidth/4.0) + cardWidth;
+        coord[2] = coord[0] + (int)(cardWidth*1.2);
+        coord[3] = coord[1] + (int)(cardWidth*0.4);
+        map.put("Button3", coord);
+
+        //Button4 - bottom left
+        coord = new int[4];
+        coord[0] = promptROrBCardRow1X + (int)(cardWidth*2);
+        coord[1] = promptROrBCardRow1Y + (int)(cardWidth/4.0) + cardWidth;
+        coord[2] = coord[0] + (int)(cardWidth*1.2);
+        coord[3] = coord[1] + (int)(cardWidth*0.4);
+        map.put("Button4", coord);
+
+        //Button5 - end turn
+        coord = new int[4];
+        coord[0] = promptX+(int)(cardWidth*4.0);
+        coord[1] = promptY+37;
+        coord[2] = coord[0] + (int)(cardWidth*1.2);
+        coord[3] = coord[1] + (int)(cardWidth*0.4);
+        map.put("EndTurn", coord);
+
+
+    }
+
+    // index returned is 0 based
+    // -100 MEANS THE PLAYER DID NOT CLICK ON A CARD!
+    public int getArchiveCardIndexClicked(int x, Player currentPlayer)
+    {
+        int index = (int)((x - generalSectionCoord.get("Archive")[0]) / cardWidth);
+        if (index+1 > currentPlayer.getArchive().size())
+            return -100;
+        return index;
+    }
+
+    // index returned is 0 based
+    // -100 MEANS THE PLAYER DID NOT CLICK ON A CARD!
+    public int getToolbarCardIndexClicked(int y, Player currentPlayer, String mapCardType, GizmoType type)
+    {
+        int topLeftYCoord = generalSectionCoord.get(mapCardType)[1];
+        int numOfCards = currentPlayer.getToolBar().getCards().get(type).size();
+        int distance = y - topLeftYCoord;
+        int cardsOwnedLength = ownedCardsHeaderLength * (numOfCards-1) + cardWidth;
+
+        if (distance <= ownedCardsHeaderLength * numOfCards)
+            return (int)(y - topLeftYCoord/ ownedCardsHeaderLength);
+        else if (distance <= cardsOwnedLength)
+            return numOfCards - 1;
+        else
+            return -100;
+
+    }
+
+    // index returned is 0 based
+    // -1 MEANS PLAYER HAS CLICKED ON THE TIER CARD!
+    // YOU HAVE TO MINUS 1 AT THE END BC -1 IS THE TIER CARD
+    // Dont need to check if out of bounds and return -100 bc it is an array with a fixed length
+    public int getTierCardIndexClicked(int x, String mapCardType)
+    {
+        int index = (int)((x - generalSectionCoord.get(mapCardType)[0]) / cardWidth) - 1;
+        return index;
+    }
+
+    public int getFirst6MarbleIndexClicked(int y, String mapCardType)
+    {
+        int index = (int)((y - generalSectionCoord.get(mapCardType)[1]) / first6Width);
+        return index;
+    }
+
+    public int getResearchCardIndexClicked(int x, int y, Player currentPlayer)
+    {
+        int numOfResearchCards = currentPlayer.getCardsResearching().size();
+        if (numOfResearchCards <= 5 && y >= promptROrBCardRow1Y && y <= promptROrBCardRow1Y + cardWidth)
+        {
+            int index = (int)((x - promptROrBCardRow1X) / cardWidth);
+            if (index < 5)
+                return index;
+        }
+        else if (numOfResearchCards > 5 && y >= promptROrBCardRow2Y && y <= promptROrBCardRow2Y + cardWidth)
+        {
+            int index = (int)((x - promptROrBCardRow2X) / cardWidth);
+            if (index < 5)
+                return index + 5;
+        }
+        return -100;
+    }
+
+    public int getConvertMarbleClicked(int x, int y, Player currentPlayer)
+    {
+        int colorOfMarblesSize = getDistinctColorsInRing(currentPlayer).size();
+        if (y >= promptROrBCardRow1Y + (int)(cardWidth/2.0) && y <= promptROrBCardRow1Y + cardWidth)
+        {
+            int index = (int)((x - promptROrBCardRow1X)/ (int)(cardWidth/2.0));
+            if (index % 2 == 0 && index < colorOfMarblesSize*2 -1)
+                return index;
+        }
+        return -100;
+    }
+
+    public ArrayList<MarbleColor> getDistinctColorsInRing(Player currentPlayer)
+    {
+        ArrayList<MarbleColor> list = new ArrayList<MarbleColor>();
+        boolean sameColorFound;
+        for (int i = 0; i < currentPlayer.getEnergyRing().size(); i++)
+        {
+            sameColorFound = false;
+            for (int j = 0; j < list.size(); j++)
+            {
+                if (currentPlayer.getEnergyRing().get(i).getColor() == list.get(j))
+                {
+                    sameColorFound = true;
+                    break;
+                }
+            }
+            if (sameColorFound == false)
+                list.add(currentPlayer.getEnergyRing().get(i).getColor());
+        }
+        return list;
+    }
+
+
+    /**
+     * @param x mouseListener x
+     * @param y mouseListener y
+     */
+    public void getObjectClicked(int x, int y)
+    {
+        resetMouseClickEvents();
+
+        // Archive Section
+        if (x >= generalSectionCoord.get("Archive")[0] && y >= generalSectionCoord.get("Archive")[1] && x <= generalSectionCoord.get("Archive")[2] && y <= generalSectionCoord.get("Archive")[3])
+        {
+            int index = getArchiveCardIndexClicked(x, currentPlayer);
+            if (index != -100)
+            {
+                archiveSectionClicked = true;
+                cardClicked = currentPlayer.getArchive().get(index);
+            }
+        }
+        // Upgrade Section
+        else if (x >= generalSectionCoord.get("UpgradeCards")[0] && y >= generalSectionCoord.get("UpgradeCards")[1] && x <= generalSectionCoord.get("UpgradeCards")[2] && y <= generalSectionCoord.get("UpgradeCards")[3])
+        {
+            int index = getToolbarCardIndexClicked(y, currentPlayer, "UpgradeCards", GizmoType.UPGRADE);
+            if (index != -100) {
+                upgradeSectionClicked = true;
+                cardClicked = currentPlayer.getToolBar().getCards().get(GizmoType.UPGRADE).get(index);
+            }
+        }
+        // Convert Section
+        else if (x >= generalSectionCoord.get("ConvertCards")[0] && y >= generalSectionCoord.get("ConvertCards")[1] && x <= generalSectionCoord.get("ConvertCards")[2] && y <= generalSectionCoord.get("ConvertCards")[3])
+        {
+            int index = getToolbarCardIndexClicked(y, currentPlayer, "ConvertCards", GizmoType.CONVERTOR);
+            if (index != -100)
+            {
+                convertSectionClicked = true;
+                cardClicked = currentPlayer.getToolBar().getCards().get(GizmoType.CONVERTOR).get(index);
+            }
+        }
+        // File Section
+        else if (x >= generalSectionCoord.get("FileCards")[0] && y >= generalSectionCoord.get("FileCards")[1] && x <= generalSectionCoord.get("FileCards")[2] && y <= generalSectionCoord.get("FileCards")[3])
+        {
+            int index = getToolbarCardIndexClicked(y, currentPlayer, "FileCards", GizmoType.FILE);
+            if (index != -100) {
+                fileSectionClicked = true;
+                cardClicked = currentPlayer.getToolBar().getCards().get(GizmoType.FILE).get(index);
+            }
+        }
+        // Pick Section
+        else if (x >= generalSectionCoord.get("PickCards")[0] && y >= generalSectionCoord.get("PickCards")[1] && x <= generalSectionCoord.get("PickCards")[2] && y <= generalSectionCoord.get("PickCards")[3])
+        {
+            int index = getToolbarCardIndexClicked(y, currentPlayer, "PickCards", GizmoType.PICK);
+            if (index != -100) {
+                pickSectionClicked = true;
+                cardClicked = currentPlayer.getToolBar().getCards().get(GizmoType.PICK).get(index);
+            }
+        }
+        // Build Section
+        else if (x >= generalSectionCoord.get("BuildCards")[0] && y >= generalSectionCoord.get("BuildCards")[1] && x <= generalSectionCoord.get("BuildCards")[2] && y <= generalSectionCoord.get("BuildCards")[3])
+        {
+            int index = getToolbarCardIndexClicked(y, currentPlayer, "BuildCards", GizmoType.BUILD);
+            if (index != -100) {
+                buildSectionClicked = true;
+                cardClicked = currentPlayer.getToolBar().getCards().get(GizmoType.BUILD).get(index);
+            }
+        }
+        // Tier 1 Section
+        else if (x >= generalSectionCoord.get("Tier1Cards")[0] && y >= generalSectionCoord.get("Tier1Cards")[1] && x <= generalSectionCoord.get("Tier1Cards")[2] && y <= generalSectionCoord.get("Tier1Cards")[3])
+        {
+            tier1DeckClicked = true;
+            cardClicked = deck.getTier1()[getTierCardIndexClicked(x, "Tier1Cards")];
+        }
+        // Tier 2 Section
+        else if (x >= generalSectionCoord.get("Tier2Cards")[0] && y >= generalSectionCoord.get("Tier2Cards")[1] && x <= generalSectionCoord.get("Tier2Cards")[2] && y <= generalSectionCoord.get("Tier2Cards")[3])
+        {
+            tier2DeckClicked = true;
+            cardClicked = deck.getTier2()[getTierCardIndexClicked(x, "Tier2Cards")];
+        }
+        // Tier 3 Section
+        else if (x >= generalSectionCoord.get("Tier3Cards")[0] && y >= generalSectionCoord.get("Tier3Cards")[1] && x <= generalSectionCoord.get("Tier3Cards")[2] && y <= generalSectionCoord.get("Tier3Cards")[3])
+        {
+            tier3DeckClicked = true;
+            cardClicked = deck.getTier3()[getTierCardIndexClicked(x, "Tier3Cards")];
+        }
+        // first 6 marbles section
+        else if (x >= generalSectionCoord.get("First6Marbles")[0] && y >= generalSectionCoord.get("First6Marbles")[1] && x <= generalSectionCoord.get("First6Marbles")[2] && y <= generalSectionCoord.get("First6Marbles")[3])
+        {
+            first6Clicked = true;
+            marbleClicked = energyDispenser.getFirstSix().get(getFirst6MarbleIndexClicked( y, "First6Marbles"));
+        }
+        //Prompt 4 main action
+        else if (displayPromptChoice == 1)
+        {
+            if (x >= generalSectionCoord.get("Button1")[0] && y >= generalSectionCoord.get("Button1")[1] && x <= generalSectionCoord.get("Button1")[2] && y <= generalSectionCoord.get("Button1")[3])
+                buildButtonClicked = true;
+            else if (x >= generalSectionCoord.get("Button2")[0] && y >= generalSectionCoord.get("Button2")[1] && x <= generalSectionCoord.get("Button2")[2] && y <= generalSectionCoord.get("Button2")[3])
+                pickButtonClicked = true;
+            else if (x >= generalSectionCoord.get("Button3")[0] && y >= generalSectionCoord.get("Button3")[1] && x <= generalSectionCoord.get("Button3")[2] && y <= generalSectionCoord.get("Button3")[3])
+                buildButtonClicked = true;
+            else if (x >= generalSectionCoord.get("Button4")[0] && y >= generalSectionCoord.get("Button4")[1] && x <= generalSectionCoord.get("Button4")[2] && y <= generalSectionCoord.get("Button4")[3])
+                researchButtonClicked = true;
+        }
+        else if (displayPromptChoice == 2) {
+            if (x >= generalSectionCoord.get("Button1")[0] && y >= generalSectionCoord.get("Button1")[1] && x <= generalSectionCoord.get("Button1")[2] && y <= generalSectionCoord.get("Button1")[3])
+                yesButtonClicked = true;
+            else if (x >= generalSectionCoord.get("Button2")[0] && y >= generalSectionCoord.get("Button2")[1] && x <= generalSectionCoord.get("Button2")[2] && y <= generalSectionCoord.get("Button2")[3])
+                noButtonClicked = true;
+        }
+        // Converting marbles color
+//        else if ()
+//        {
+//
+//        }
+
+        // Research Section
+        else if (displayPromptChoice == 4)
+        {
+            int index = getResearchCardIndexClicked(x, y, currentPlayer);
+            if (index != -100) {
+                researchingCardsClicked = true;
+                cardClicked = currentPlayer.getCardsResearching().get(index);
+            }
+        }
+        //Prompt research build and file button
+        else if (displayPromptChoice == 5)
+        {
+            if (x >= generalSectionCoord.get("Button1")[0] && y >= generalSectionCoord.get("Button1")[1] && x <= generalSectionCoord.get("Button1")[2] && y <= generalSectionCoord.get("Button1")[3])
+                buildButtonClicked = true;
+            else if (x >= generalSectionCoord.get("Button2")[0] && y >= generalSectionCoord.get("Button2")[1] && x <= generalSectionCoord.get("Button2")[2] && y <= generalSectionCoord.get("Button2")[3])
+                fileButtonClicked = true;
+        }
+        else if (displayPromptChoice == 6)
+        {
+            if (x >= generalSectionCoord.get("EndTurn")[0] && y >= generalSectionCoord.get("EndTurn")[1] && x <= generalSectionCoord.get("EndTurn")[2] && y <= generalSectionCoord.get("EndTurn")[3])
+                endTurnButtonClicked = true;
+        }
+    }
+
+    public int getConvertMethodInPrompt(Player currentPlayer)
+    {
+        return currentPlayer.getConvertCardClicked();
+    }
+
+
+    public BufferedImage marbleToColor(MarbleColor color)
+    {
+        switch (color)
+        {
+            case RED: return redMarble;
+            case BLUE: return blueMarble;
+            case BLACK: return blackMarble;
+            case YELLOW: return yellowMarble;
+        }
+        return redMarble;
+    }
+
+    public BufferedImage numberToBonusVPToken(int num)
+    {
+        switch (num)
+        {
+            case 1: return victoryPoint1;
+            case 5: return victoryPoint5;
+        }
+        return victoryPoint1;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e)
+    {
+        int x = e.getX();
+        int y = e.getY();
+        if (x >= 566 && x <= 1052 && y >= 734 && y <= 805 && gameStart == false){
+            rulesButtonClicked = true;
+            repaint();
+            System.out.println("Downloaded Rules");
+            waitForSeconds(2);
+            downloadRules();
+        }
+        if(x>=514 && x<= 1086 && y>=586 && y<=721 && gameStart == false){
+            System.out.println("Game Started!");
+            gameStart = true;
+            startOfPlayerTurn = false;
+        }
+        if (x >= 200 && y >= 30 && x <= 320 && y <= 160)
+            System.out.println("card 1 archive clicked");
+        if (x >= 330 && y >= 30 && x <= 450 && y <= 160)
+            System.out.println("card 2 archive clicked");
+
+        out.println("( "+ x +", "+ y +" )");
+        // player clicks on card to file from the 3 tiers
+        // player clicks on 4 buttons
+        // after player clicks on build, show two buttons: field and archive and allow player to choose one
+        // player clicks on one of the 3 tiers and then clicks on a card to research
+        repaint();
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {    }
+    @Override
+    public void mouseReleased(MouseEvent e) {    }
+    @Override
+    public void mouseEntered(MouseEvent e) {    }
+    @Override
+    public void mouseExited(MouseEvent e) {    }
     public void drawRulesDownloaded(Graphics g)
     {
         Font f = new Font("Serif", Font.BOLD, 35);
@@ -333,7 +1460,7 @@ public class GamePanel extends JPanel implements MouseListener
 
     public void setPrompt(String str)
     {
-        prompt = str;
+        promptStr = str;
     }
 
     public void waitForSeconds(double seconds)
@@ -360,39 +1487,6 @@ public class GamePanel extends JPanel implements MouseListener
             }
         }
     }
-
-    @Override
-    public void mouseClicked(MouseEvent e)
-    {
-        int x = e.getX();
-        int y = e.getY();
-        if (x >= 0 && x <= 295 && y >= 0 && y <= 124 && gameStart == false){
-            rulesButtonClicked = true;
-            repaint();
-            System.out.println("Downloaded Rules");
-            waitForSeconds(2);
-            downloadRules();
-        }
-        if(x>=443 && x<=924 && y>=562 && y<=706){
-            System.out.println("Game Started!");
-            gameStart = true;
-        }
-        out.println("( "+ x +", "+ y +" )");
-        // player clicks on card to file from the 3 tiers
-        // player clicks on 4 buttons
-        // after player clicks on build, show two buttons: field and archive and allow player to choose one
-        // player clicks on one of the 3 tiers and then clicks on a card to research
-        repaint();
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {    }
-    @Override
-    public void mouseReleased(MouseEvent e) {    }
-    @Override
-    public void mouseEntered(MouseEvent e) {    }
-    @Override
-    public void mouseExited(MouseEvent e) {    }
     private static void downloadUsingStream(String urlStr, String file) throws IOException
     {
         URL url = new URL(urlStr);
@@ -431,7 +1525,6 @@ public class GamePanel extends JPanel implements MouseListener
             Desktop.getDesktop().open(new File(home+"/Downloads/GizmosRules.pdf"));
         } catch (IOException e) {
             e.printStackTrace();
-            out.println("hi");
         }
     }
 }
