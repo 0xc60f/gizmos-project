@@ -39,7 +39,7 @@ public class EnergyRing
     {
         int count = 0;
         for (Marble m: energyRing)
-            if (m.getColor() == MarbleColor.RED)
+            if (m.getOldColor() == MarbleColor.RED)
                 count++;
         return count;
     }
@@ -48,7 +48,7 @@ public class EnergyRing
     {
         int count = 0;
         for (Marble m: energyRing)
-            if (m.getColor() == MarbleColor.BLUE)
+            if (m.getOldColor() == MarbleColor.BLUE)
                 count++;
         return count;
     }
@@ -57,7 +57,7 @@ public class EnergyRing
     {
         int count = 0;
         for (Marble m: energyRing)
-            if (m.getColor() == MarbleColor.BLACK)
+            if (m.getOldColor() == MarbleColor.BLACK)
                 count++;
         return count;
     }
@@ -66,7 +66,7 @@ public class EnergyRing
     {
         int count = 0;
         for (Marble m: energyRing)
-            if (m.getColor() == MarbleColor.YELLOW)
+            if (m.getOldColor() == MarbleColor.YELLOW)
                 count++;
         return count;
     }

@@ -26,6 +26,11 @@ public class EnergyDispenser
         addAllMarbles();
     }
 
+    public ArrayList<Marble> getMarbles()
+    {
+        return marbles;
+    }
+
     public ArrayList<Marble> getFirstSix() //should not remove from arrayList
     {
         return IntStream.range(0, 6).<Marble>mapToObj(i -> marbles.get(i)).collect(Collectors.toCollection(ArrayList::new));

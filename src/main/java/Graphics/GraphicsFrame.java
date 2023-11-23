@@ -13,7 +13,9 @@ public class GraphicsFrame extends JFrame {
         setSize(WIDTH, HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        add(new GamePanel());
+        GamePanel g = new GamePanel();
+        add(g);
         setVisible(true);
+        g.play();
     }
 }

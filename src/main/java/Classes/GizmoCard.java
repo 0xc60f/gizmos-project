@@ -10,12 +10,18 @@ import java.util.HashMap;
  * @author 0xc60f
  */
 public class GizmoCard implements Card, CardEffect {
-    private final HashMap<MarbleColor, Integer> cost;
+//    private final HashMap<MarbleColor, Integer> cost;
+    private MarbleColor colorOfCost;
+    private int cost;
     private int effectNumber;
     private int numOfVictoryPts;
     private String effectType;
     private GizmoType category;
+    private GizmoLevel level;
     private BufferedImage image;
+    private MarbleColor color1;
+    private MarbleColor color2;
+    private boolean triggered;
 
     /**
      * Creates a GizmoCard with the given cost.
@@ -27,14 +33,41 @@ public class GizmoCard implements Card, CardEffect {
      * @param effectNum the method number in that effectTypeClass
      * @param image number of the image in our folder of all images starting from 1
      */
-    public GizmoCard(MarbleColor typeMarble, int cost, int numOfVictoryPts, GizmoType category, String effectType, int effectNum, BufferedImage image) {
-        this.cost = new HashMap<>();
-        this.cost.put(typeMarble, cost);
+    public GizmoCard(MarbleColor typeMarble, int cost, int numOfVictoryPts, GizmoType category, String effectType, int effectNum, BufferedImage image, GizmoLevel level) {
+        colorOfCost = typeMarble;
+        this.cost = cost;
         this.numOfVictoryPts = numOfVictoryPts;
         this.category = category;
         this.effectType = effectType;
         effectNumber = effectNum;
         this.image = image;
+        this.level = level;
+        triggered = false;
+    }
+    public GizmoCard(MarbleColor typeMarble, int cost, int numOfVictoryPts, GizmoType category, String effectType, int effectNum, BufferedImage image, MarbleColor color1, GizmoLevel level) {
+        colorOfCost = typeMarble;
+        this.cost = cost;
+        this.numOfVictoryPts = numOfVictoryPts;
+        this.category = category;
+        this.effectType = effectType;
+        effectNumber = effectNum;
+        this.image = image;
+        this.color1 = color1;
+        this.level = level;
+        triggered = false;
+    }
+    public GizmoCard(MarbleColor typeMarble, int cost, int numOfVictoryPts, GizmoType category, String effectType, int effectNum, BufferedImage image, MarbleColor color1, MarbleColor color2, GizmoLevel level) {
+        colorOfCost = typeMarble;
+        this.cost = cost;
+        this.numOfVictoryPts = numOfVictoryPts;
+        this.category = category;
+        this.effectType = effectType;
+        effectNumber = effectNum;
+        this.image = image;
+        this.color1 = color1;
+        this.color2 = color2;
+        this.level = level;
+        triggered = false;
     }
 
     /**
@@ -42,12 +75,12 @@ public class GizmoCard implements Card, CardEffect {
      */
 
     public GizmoCard() {
-        cost = new HashMap<>();
+        cost = 0;
     }
 
     @Override
     public GizmoLevel getLevel() {
-        return null;
+        return level;
     }
 
     @Override
@@ -70,6 +103,33 @@ public class GizmoCard implements Card, CardEffect {
 
     }
 
+    public MarbleColor getColor1() {
+        return color1;
+    }
+
+    public MarbleColor getColor2() {
+        return color2;
+    }
+    public boolean isTriggered() {
+        return triggered;
+    }
+    public void setTriggered(boolean triggered) {
+        this.triggered = triggered;
+    }
+    public int getEffectNumber() {
+        return effectNumber;
+    }
+
+    public int getNumOfVictoryPts() {
+        return numOfVictoryPts;
+    }
+    public GizmoType getCategory() {
+        return category;
+    }
+    public GizmoLevel getGizmoLevel() {
+        return level;
+    }
+
     /**
      * Gets the image of the GizmoCard.
      * @return The image of the GizmoCard as a <code>BufferedImage</code>.
@@ -86,9 +146,18 @@ public class GizmoCard implements Card, CardEffect {
         this.image = image;
     }
 
-    public HashMap<MarbleColor, Integer> getCost() {
+    public int getCost() {
         return cost;
     }
+
+    public MarbleColor getColorOfCost() {
+        return colorOfCost;
+    }
+
+//    public String toString()
+//    {
+//        return "Type of card: "+category +"   Cost of card: "+cost;
+//    }
 
 
 }
