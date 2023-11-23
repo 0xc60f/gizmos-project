@@ -10,12 +10,12 @@ public interface CardEffect {
      * @implSpec This should be implemented by all <code>GizmoCard</code> implementations and should check all necessary conditions.
      * @return True if the card can be activated, false otherwise.
      */
-    public boolean trigger();
+    boolean trigger();
 
     /**
      * Activates the card. This is called when the card is activated by the player.
      * @implSpec This should be implemented by all <code>GizmoCard</code> implementations and should define the actions taken step-by-step. This should work with the <code>Card</code> interface
      * to define how a Gizmo's effect is activated.
      */
-    public void activate();
+    void activate();
 }

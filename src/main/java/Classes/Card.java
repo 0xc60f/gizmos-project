@@ -10,18 +10,18 @@ public interface Card {
      * @implNote This is used to determine the level of the gizmo to be built.
      * @return The level of the card as a <code>GizmoLevel</code> enum.
      */
-    public GizmoLevel getLevel();
+    GizmoLevel getLevel();
     /**
      * Gets the type of the card. This should be one of the values in <code>GizmoType</code> when instantiated.
      * @implNote This is used to determine the type of the gizmo to be built.
      * @return The type of the card as a <code>GizmoType</code> enum.
      */
-    public GizmoType getType();
+    GizmoType getType();
 
     /**
      * Defines the Gizmo effect that the card has. This is called when the card is activated by the player.
      * @implSpec This should be implemented by all <code>GizmoCard</code> implementations and should define the actions taken step-by-step.
      * @implNote This is used to determine the effect of the gizmo to be built.
      */
-    public void gizmoEffect();
+    void gizmoEffect();
 }
