@@ -45,16 +45,16 @@ public class Toolbar {
 
     /**
      * Adds a GizmoCard to the Toolbar in the corresponding section.
-     * @param card The GizmoCard to add.
+     * @param gizmo The GizmoCard to add.
      */
-    public void addGizmoCard(GizmoCard card){
-        if(cards.containsKey(card.getType())){
-            cards.get(card.getType()).add(card);
+    public void addGizmoCard(GizmoCard gizmo){
+        if(cards.containsKey(gizmo.getType())){
+            cards.get(gizmo.getType()).add(gizmo);
         }
         else{
             ArrayList<GizmoCard> temp = new ArrayList<>();
-            temp.add(card);
-            cards.put(card.getType(), temp);
+            temp.add(gizmo);
+            cards.put(gizmo.getType(), temp);
         }
     }
 }

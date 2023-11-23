@@ -22,9 +22,9 @@ public class Player implements Comparable<Player>
      */
     public Player(int num)
     {
-        victoryPoints = new ArrayList<>();
+        victoryPoints = new ArrayList<BonusVictoryPoint>();
         energyRing = new EnergyRing();
-        archive = new ArrayList<>();
+        archive = new ArrayList<GizmoCard>();
         cardsResearching = new ArrayList<GizmoCard>();
         toolbar = new Toolbar();
         fileBlocked = false; researchBlocked = false;
@@ -40,10 +40,10 @@ public class Player implements Comparable<Player>
         return archive;
     }
 
-    public void setArchive(ArrayList<GizmoCard> list)
-    {
-        archive = list;
-    }
+//    public void setArchive(ArrayList<GizmoCard> list)
+//    {
+//        archive = list;
+//    }
 
     public ArrayList<GizmoCard> getCardsResearching()
     {
@@ -98,8 +98,8 @@ public class Player implements Comparable<Player>
     public void convert1To1(MarbleColor oldColor, MarbleColor newColor)
     {
         for (Marble m : energyRing.getRing()) {
-            if (m.getColor() == oldColor) {
-                m.setColor(newColor);
+            if (m.getOldColor() == oldColor) {
+                m.setOldColor(newColor);
                 break;
             }
         }
@@ -113,8 +113,8 @@ public class Player implements Comparable<Player>
     public void convert1To2(MarbleColor oldColor, MarbleColor newColor)
     {
         for (Marble m : energyRing.getRing()) {
-            if (m.getColor() == oldColor) {
-                m.setColor(newColor);
+            if (m.getOldColor() == oldColor) {
+                m.setOldColor(newColor);
                 energyRing.addMarble(m);
                 break;
             }
@@ -127,8 +127,8 @@ public class Player implements Comparable<Player>
      */
     public void file(GizmoCard g)
     {
-        if (archive.size() < maxArchive)
-            toolbar.addGizmoCard(g);
+//        if (archive.size() < maxArchive)
+        archive.add(g);
     }
 
     /**
@@ -136,12 +136,11 @@ public class Player implements Comparable<Player>
      * Takes in the player's choice and removes it from the first 6 to add to their energyRing
      *
      * @param choice player's pick from the first 6 marbles
-     * @param first6 the first 6 marbles of the energyDispenser
+     * @param energyDispenser the first 6 marbles of the energyDispenser
      */
-    public void pickFrom6(int choice, ArrayList<Marble> first6)
+    public void pickFrom6(int choice, ArrayList<Marble> energyDispenser)
     {
-        if (energyRing.getRing().size() < energyRing.getEnergyRingMax())
-            energyRing.addMarble(first6.remove(choice-1));
+        energyRing.addMarble(energyDispenser.remove(choice));
     }
 
     /**
@@ -165,15 +164,20 @@ public class Player implements Comparable<Player>
 
     /**
      * Checks if player has enough energy to build the gizmo and if so calls the toolbar method addGizmo();
-     * @param numOfRed			number of red energy needed to build the gizmo
-     * @param numOfBlue			number of blue energy needed to build the gizmo
-     * @param numOfYellow		number of yellow energy needed to build the gizmo
-     * @param numOfBlack		number of black energy needed to build the gizmo
      */
-    public void build(int numOfRed, int numOfBlue, int numOfYellow, int numOfBlack, GizmoCard g)
+    public void build(GizmoCard g, int cost, MarbleColor color, EnergyDispenser energyDispenser)
     {
-        if (energyRing.getNumOfRed() >= numOfRed && energyRing.getNumOfBlue() >= numOfBlue && energyRing.getNumOfYellow() >= numOfYellow && energyRing.getNumOfBlack() >= numOfBlack)
-            toolbar.addGizmoCard(g);
+        toolbar.addGizmoCard(g);
+        for (int i = 0; i < energyRing.getRing().size(); i++)
+        {
+            if (cost == 0)
+                break;
+            else if (energyRing.getRing().get(i).getOldColor() == color) {
+                energyDispenser.getMarbles().add(energyRing.getRing().remove(i));
+                i--;
+                cost--;
+            }
+        }
     }
 
     /**
@@ -191,7 +195,14 @@ public class Player implements Comparable<Player>
     /**
      * returns the limit of the player's archive
      */
-    public int getArchiveMax()
+    public int getMaxArchive()
+    {
+        return maxArchive;
+    }
+    /**
+     * returns the limit of the player's archive
+     */
+    public int getMaxResearch()
     {
         return maxResearch;
     }
@@ -310,7 +321,7 @@ public class Player implements Comparable<Player>
         return actionPicked;
     }
 
-    public int getConvertCardClicked()
+    public int getConvertMethodClicked()
     {
         return convertCardClicked;
     }
