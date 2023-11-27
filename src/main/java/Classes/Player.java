@@ -1,9 +1,8 @@
 package Classes;
 
-import java.util.ArrayList;
-import java.util.TreeSet;
-import java.util.Random;
-import java.util.HashSet;
+import javax.imageio.ImageIO;
+import java.io.IOException;
+import java.util.*;
 
 public class Player implements Comparable<Player>
 {
@@ -20,13 +19,13 @@ public class Player implements Comparable<Player>
      * Sets the starting sizes for ring size, archive size, and research size
      * Sets score to 0 and player can file and research
      */
-    public Player(int num)
-    {
+    public Player(int num) throws IOException {
         victoryPoints = new ArrayList<BonusVictoryPoint>();
         energyRing = new EnergyRing();
         archive = new ArrayList<GizmoCard>();
         cardsResearching = new ArrayList<GizmoCard>();
         toolbar = new Toolbar();
+        toolbar.addGizmoCard(new GizmoCard(MarbleColor.ANY, 0,0, GizmoType.FILE, "filePick1Random", 4, ImageIO.read(Objects.requireNonNull(Player.class.getResource("/Images/GizmoCards/FirstFileCard.png"))), GizmoLevel.LEVEL0));
         fileBlocked = false; researchBlocked = false;
         playerNumber = num;
         maxResearch = 3;

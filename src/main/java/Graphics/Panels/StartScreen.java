@@ -1,4 +1,4 @@
-package main.java.Graphics.Panels;
+package Graphics.Panels;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -27,7 +27,6 @@ public class StartScreen extends JPanel implements MouseListener {
 
     public void paint(Graphics g) {
         super.paint(g);
-        ;
         //switch(choice){
         /*case 1: */
         g.drawImage(start, 0, 0, 1920, 1080, null);

@@ -24,6 +24,10 @@ public class FileCardEffects
     {
 
     }
+    public void filePick1Random()
+    {
+
+    }
 
     public void activateEffect(int methodNum)
     {
@@ -32,6 +36,7 @@ public class FileCardEffects
             case 1: fileGet1VictoryPoint(); break;
             case 2: filePick1From6(); break;
             case 3: filePick3Random(); break;
+            case 4: filePick1Random(); break;
         }
     }
 
