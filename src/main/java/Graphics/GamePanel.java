@@ -395,11 +395,15 @@ public class GamePanel extends JPanel implements MouseListener {
             archiveSectionClickable = false;
 
         }
-//        else if (researchButtonClicked)
-//        {
-//            set4ActionsInvisible();
-//            startOfPlayerTurn = false;
-//        }
+        else if (researchButtonClicked)
+        {
+            set4ActionsInvisible();
+            startOfPlayerTurn = false;
+            tier1SectionClickable = true;
+            tier2SectionClickable = true;
+            tier3SectionClickable = true;
+            setPrompt("")
+        }
         setPrompt("Click the end turn button to go to the next player");
         displayPromptChoice = 6;
         resetCardClicked();
@@ -471,27 +475,43 @@ public class GamePanel extends JPanel implements MouseListener {
 
     public void oneColor1Or2ToAny()
     {
-        boolean colorFound = false;
-        for (int i = 0; i < currentPlayer.getEnergyRing().size(); i++)
-            if (currentPlayer.getEnergyRing().get(i).getOldColor() == cardClicked.getColor1())
-                colorFound = true;
-        if (!colorFound){
-            setPrompt("You do not have any marbles of that color to convert");
-            repaint();
-            waitForSeconds(0.5);
+        if (currentPlayer.getEnergyRing().size()+1 <= currentPlayer.getMaxResearch()) {
+            boolean color1Found = false;
+            boolean color2Found = false;
+            for (int i = 0; i < currentPlayer.getEnergyRing().size(); i++) {
+                if (currentPlayer.getEnergyRing().get(i).getOldColor() == cardClicked.getColor1())
+                    color1Found = true;
+                if (currentPlayer.getEnergyRing().get(i).getOldColor() == cardClicked.getColor2())
+                    color2Found = true;
+            }
+            if (!color1Found || !color2Found) {
+                setPrompt("You do not have any marbles of those colors to convert");
+                repaint();
+                waitForSeconds(0.5);
+            } else {
+                if (color1Found) {
+                    setPrompt("");
+                }
+                displayPromptChoice = 3;
+                currentPlayer.setConvertMethod(1);
+                marblesVisible = true;
+                repaint();
+                waitForConvertColorChoice();
+                for (int i = 0; i < currentPlayer.getEnergyRing().size(); i++)
+                    if (currentPlayer.getEnergyRing().get(i).getOldColor() == marbleClickIndexToColor(marbleClickedIndex))
+                        currentPlayer.getEnergyRing().get(i).setNewColor(marbleClickIndexToColor(marbleClickedIndex));
+                setPrompt("You converted your marble!");
+                repaint();
+                waitForSeconds(1);
+            }
+        }
+        else if (currentPlayer.getEnergyRing().size()+2 <= currentPlayer.getMaxResearch())
+        {
+
         }
         else
         {
-            setPrompt("Choose a color to convert the marble into");
-            displayPromptChoice = 3;
-            currentPlayer.setConvertMethod(1);
-            marblesVisible = true;
-            repaint();
-            waitForConvertColorChoice();
-            for (int i = 0; i < currentPlayer.getEnergyRing().size();i++)
-                if (currentPlayer.getEnergyRing().get(i).getOldColor() == marbleClickIndexToColor(marbleClickedIndex))
-                    currentPlayer.getEnergyRing().get(i).setNewColor(marbleClickIndexToColor(marbleClickedIndex));
-            setPrompt("You converted your marble!");
+            setPrompt("You do not have any room to carry marbles.");
             repaint();
             waitForSeconds(1);
         }
@@ -500,6 +520,7 @@ public class GamePanel extends JPanel implements MouseListener {
     public HashSet<GizmoCard> getAllTriggeredCards()
     {
         HashSet<GizmoCard> activatableCards = new HashSet<GizmoCard>();
+
         return activatableCards;
     }
 
@@ -1424,6 +1445,8 @@ public class GamePanel extends JPanel implements MouseListener {
         else if (tier1SectionClickable == true && x >= generalSectionCoord.get("Tier1Cards")[0] && y >= generalSectionCoord.get("Tier1Cards")[1] && x <= generalSectionCoord.get("Tier1Cards")[2] && y <= generalSectionCoord.get("Tier1Cards")[3]) {
             tier1SectionClicked = true;
             int index1 = getTierCardIndexClicked(x, "Tier1Cards");
+            if (index1 == -1)
+
             cardIsClicked = true;
             tierCardClickedIndex = index1;
             cardClicked = deck.getTier1()[index1];
@@ -1729,6 +1752,17 @@ public class GamePanel extends JPanel implements MouseListener {
     public void waitForConvertColorChoice()
     {
         while (!marbleColorClicked) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    public void waitForResearchTierChoice()
+    {
+        while (!tier1SectionClicked && !tier2SectionClicked && !tier3SectionClicked) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
