@@ -13,7 +13,7 @@ public class Player implements Comparable<Player>
     ArrayList<GizmoCard> cardsResearching;
     Toolbar toolbar;
     boolean fileBlocked, researchBlocked;
-    int playerNumber, maxResearch, score, maxArchive, convertCardClicked, player1Or2ConvertChoice, actionPicked;
+    int playerNumber, maxResearch, score, maxArchive, convertMethodChoice, player1Or2ConvertChoice, actionPicked;
 
     /**
      * Instantiates all the player's attributes
@@ -321,14 +321,14 @@ public class Player implements Comparable<Player>
         return actionPicked;
     }
 
-    public int getConvertMethodClicked()
+    public int getConvertMethod()
     {
-        return convertCardClicked;
+        return convertMethodChoice;
     }
 
-    public void setConvertMethodClicked(int x)
+    public void setConvertMethod(int x)
     {
-        convertCardClicked = x;
+        convertMethodChoice = x;
     }
     public int get1Or2ConvertChoice()
     {
