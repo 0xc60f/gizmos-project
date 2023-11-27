@@ -129,6 +129,9 @@ public class GizmoCard implements Card, CardEffect {
     public GizmoLevel getGizmoLevel() {
         return level;
     }
+    public String getEffectType() {
+        return effectType;
+    }
 
     /**
      * Gets the image of the GizmoCard.

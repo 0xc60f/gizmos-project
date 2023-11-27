@@ -57,11 +57,11 @@ public class GamePanel extends JPanel implements MouseListener {
     private int smallCardWidth, smallCardHeaderLength, smallERX, smallERY, smallERWidth, smallEMR1X, smallEMR1Y, smallEMWidth;
     private int smallVPTitleX, smallVPTitleY, smallVPTitleWidth, smallVPTitleLength, smallVPX, smallVPY, smallVPWidth, smallVPlength;
     private GizmoCard cardClicked;
-    private boolean cardIsClicked, archiveCardClicked, drawOwnedMarbleOnlyForConvert;
+    private boolean cardIsClicked, archiveCardClicked, drawOwnedMarbleOnlyForConvert, marbleColorClicked;
     private boolean archiveSectionClickable, upgradeSectionClickable, convertSectionClickable, fileSectionClickable, pickSectionClickable, buildSectionClickable, researchingCardsClickable, first6Clickable;
     private boolean tier1SectionClickable, tier2SectionClickable, tier3SectionClickable, first6MarbleClickable;
     private TreeMap<String, int[]> generalSectionCoord;
-    private int displayPromptChoice;
+    private int displayPromptChoice, tierCardClickedIndex;
 
     public GamePanel() {
 
@@ -72,13 +72,7 @@ public class GamePanel extends JPanel implements MouseListener {
         playerList = new ArrayList<>();
         archiveCardCoord = new TreeMap<Integer, Integer>();
 
-        IntStream.rangeClosed(1, 4).forEach(i -> {
-            try {
-                playerList.add(new Player(i));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        IntStream.rangeClosed(1, 4).forEach(i -> playerList.add(new Player(i)));
 
         try {
             deck = new Deck();
@@ -189,6 +183,7 @@ public class GamePanel extends JPanel implements MouseListener {
         tier3SectionClickable = false;
         first6MarbleClickable = false;
         startGameButtonClicked = false;
+        marbleColorClicked = false;
     }
 
     public void resetVisibleFlags() {
@@ -237,14 +232,16 @@ public class GamePanel extends JPanel implements MouseListener {
 
     }
 
-    public void set4ActionsInvisible() {
+    public void set4ActionsInvisible()
+    {
         fileButtonVisible = false;
         pickButtonVisible = false;
         buildButtonVisible = false;
         researchButtonVisible = false;
     }
 
-    public void resetCardClicked() {
+    public void resetCardClicked()
+    {
         cardClicked = null;
     }
 
@@ -269,7 +266,8 @@ public class GamePanel extends JPanel implements MouseListener {
         repaint();
         waitFor4ActionClick();
 
-        if (fileButtonClicked) {
+        if (fileButtonClicked)
+        {
             set4ActionsInvisible();
             startOfPlayerTurn = false;
             setPrompt("Please choose a card from the 3 tiers to file.");
@@ -280,21 +278,31 @@ public class GamePanel extends JPanel implements MouseListener {
             waitForFileCardChoice();
             player.file(cardClicked);
             setPrompt("You added that card to your archive!");
+            if (tier1SectionClicked)
+                deck.addCardToTier1(tierCardClickedIndex);
+            else if (tier2SectionClicked)
+                deck.addCardToTier2(tierCardClickedIndex);
+            else if (tier3SectionClicked)
+                deck.addCardToTier3(tierCardClickedIndex);
             repaint();
-            waitForSeconds(1);
-        } else if (pickButtonClicked) {
+            waitForSeconds(0.5);
+        }
+        else if (pickButtonClicked)
+        {
             set4ActionsInvisible();
             startOfPlayerTurn = false;
             first6MarbleClickable = true;
             setPrompt("Please choose a marble to add to your energy ring");
             repaint();
             waitForPickMarbleClick();
-            waitForSeconds(1);
+//            waitForSeconds(0.5);
             player.pickFrom6(marbleClickedIndex, energyDispenser.getMarbles());
             setPrompt("You added that marble to your energy ring!");
             repaint();
-            waitForSeconds(1);
-        } else if (buildButtonClicked) {
+            waitForSeconds(0.5);
+        }
+        else if (buildButtonClicked)
+        {
             set4ActionsInvisible();
             startOfPlayerTurn = false;
             tier1SectionClickable = true;
@@ -304,46 +312,81 @@ public class GamePanel extends JPanel implements MouseListener {
             setPrompt("Please choose a card to build, either from the field or your archive");
             repaint();
             waitForBuildCardChoice();
-            waitForSeconds(0.5);
+//            waitForSeconds(0.5);
 
             if (currentPlayer.getToolBar().getCards().get(GizmoType.CONVERTOR).size() > 0) {
+                displayPromptChoice = 2;
                 setPrompt("Do you want to use a convertor?");
                 yesButtonVisible = true;
                 noButtonVisible = true;
                 repaint();
                 waitForYesOrNoClick();
-                waitForSeconds(0.5);
 
-                while (yesButtonClicked) {
+                while (yesButtonClicked)
+                {
                     yesButtonVisible = false;
                     noButtonVisible = false;
                     convertSectionClickable = true;
                     setPrompt("Please choose a convertor to activate");
                     repaint();
                     waitForConvertorCardChoice();
+//                    waitForSeconds(0.5);
+                    setPrompt("You are using this convertor");
+                    repaint();
                     waitForSeconds(0.5);
+                    ArrayList<MarbleColor> playerColorsToConvert = new ArrayList<MarbleColor>();
+                    if (cardClicked.getEffectType().equals("convert1ToAny"));
+                    {
+                        oneColorToAny();
+                    }
+                    if (cardClicked.getEffectType().equals("convert1Or2ToAny"))
+                    {
+                        oneColor1Or2ToAny();
+                    }
+
+                    else if (cardClicked.getEffectType().equals("convert1ToAny"))
+                    {
+
+                    }
+
+
                 }
 
             }
+            waitForSeconds(0.5);
             yesButtonVisible = false;
             noButtonVisible = false;
-            waitForSeconds(0.5);
             int count = 0;
             MarbleColor colorOfMarble = cardClicked.getColorOfCost();
             int cost = cardClicked.getCost();
-            for (int i = 0; i < currentPlayer.getEnergyRing().size(); i++) {
+            for (int i = 0; i < currentPlayer.getEnergyRing().size(); i++)
                 if (currentPlayer.getEnergyRing().get(i).getOldColor() == colorOfMarble)
                     count++;
-            }
+
             if (count >= cost) {
                 currentPlayer.build(cardClicked, cost, colorOfMarble, energyDispenser);
                 setPrompt("You build the gizmo!");
-            } else {
-                setPrompt("You don't have enough marbles to build this gizmo!");
+                repaint();
+                if (tier1SectionClicked)
+                    deck.addCardToTier1(tierCardClickedIndex);
+                else if (tier2SectionClicked)
+                    deck.addCardToTier2(tierCardClickedIndex);
+                else if (tier3SectionClicked)
+                    deck.addCardToTier3(tierCardClickedIndex);
+                else if (archiveSectionClicked)
+                    currentPlayer.getArchive().remove(cardClicked);
+                repaint();
             }
-
-            repaint();
-
+            if (count < cost)
+            {
+                setPrompt("You do not have enough marbles to build that gizmo");
+                repaint();
+                waitForSeconds(1);
+            }
+            tier1SectionClickable = false;
+            tier2SectionClickable = false;
+            tier3SectionClickable = false;
+            archiveSectionClickable = false;
 
         }
 //        else if (researchButtonClicked)
@@ -390,20 +433,89 @@ public class GamePanel extends JPanel implements MouseListener {
 //
 //
 //        }
-
-
     }
 
-    public HashSet<GizmoCard> getAllTriggeredCards() {
+    public void oneColorToAny()
+    {
+        boolean colorFound = false;
+        for (int i = 0; i < currentPlayer.getEnergyRing().size(); i++)
+            if (currentPlayer.getEnergyRing().get(i).getOldColor() == cardClicked.getColor1())
+                colorFound = true;
+        if (!colorFound){
+            setPrompt("You do not have any marbles of that color to convert");
+            repaint();
+            waitForSeconds(0.5);
+        }
+        else
+        {
+            setPrompt("Choose a color to convert the marble into");
+            displayPromptChoice = 3;
+            currentPlayer.setConvertMethod(1);
+            marblesVisible = true;
+            repaint();
+            waitForConvertColorChoice();
+            for (int i = 0; i < currentPlayer.getEnergyRing().size();i++)
+                if (currentPlayer.getEnergyRing().get(i).getOldColor() == marbleClickIndexToColor(marbleClickedIndex))
+                    currentPlayer.getEnergyRing().get(i).setNewColor(marbleClickIndexToColor(marbleClickedIndex));
+            setPrompt("You converted your marble!");
+            repaint();
+            waitForSeconds(1);
+        }
+    }
+
+    public void oneColor1Or2ToAny()
+    {
+        boolean colorFound = false;
+        for (int i = 0; i < currentPlayer.getEnergyRing().size(); i++)
+            if (currentPlayer.getEnergyRing().get(i).getOldColor() == cardClicked.getColor1())
+                colorFound = true;
+        if (!colorFound){
+            setPrompt("You do not have any marbles of that color to convert");
+            repaint();
+            waitForSeconds(0.5);
+        }
+        else
+        {
+            setPrompt("Choose a color to convert the marble into");
+            displayPromptChoice = 3;
+            currentPlayer.setConvertMethod(1);
+            marblesVisible = true;
+            repaint();
+            waitForConvertColorChoice();
+            for (int i = 0; i < currentPlayer.getEnergyRing().size();i++)
+                if (currentPlayer.getEnergyRing().get(i).getOldColor() == marbleClickIndexToColor(marbleClickedIndex))
+                    currentPlayer.getEnergyRing().get(i).setNewColor(marbleClickIndexToColor(marbleClickedIndex));
+            setPrompt("You converted your marble!");
+            repaint();
+            waitForSeconds(1);
+        }
+    }
+
+    public HashSet<GizmoCard> getAllTriggeredCards()
+    {
         HashSet<GizmoCard> activatableCards = new HashSet<GizmoCard>();
         return activatableCards;
     }
 
+//    returns red by default
+    public MarbleColor marbleClickIndexToColor(int x)
+    {
+        switch (x)
+        {
+            case 0: return MarbleColor.RED;
+            case 1: return MarbleColor.BLUE;
+            case 2: return MarbleColor.BLACK;
+            case 3: return MarbleColor.YELLOW;
+        }
+        return MarbleColor.RED;
+    }
 
-    /**
-     * This method sets the order and returns the current player, and if its the last player
-     * then it starts back to 1 and will go through 1-4
-     */
+
+
+        /**
+         * This method sets the order and returns the current player, and if its the last player
+         * then it starts back to 1 and will go through 1-4
+         */
     public void setNextPlayer() {
         currentPlayer = playerList.get((playerList.indexOf(currentPlayer) + 1) % playerList.size());
     }
@@ -547,12 +659,14 @@ public class GamePanel extends JPanel implements MouseListener {
             int y4 = erMarbleR1Y;
             int z = 0;
 
-            while (z < currentPlayer.getEnergyRing().size()) {
+            while (z < currentPlayer.getEnergyRing().size())
+            {
                 Marble tempMarble = currentPlayer.getEnergyRing().get(z);
                 g.drawImage(marbleToColor(tempMarble.getOldColor()), x4, y4, erMarbleWidth, erMarbleWidth, null);
                 x4 += erMarbleWidth;
 
-                if (z % 4 == 3) {
+                if (z % 4 == 3)
+                {
                     x4 = erMarbleR1X;
                     y4 += erMarbleWidth;
                 }
@@ -561,7 +675,7 @@ public class GamePanel extends JPanel implements MouseListener {
 
             //EnergyDispenser marbles
             int x7 = first6X;
-            int y7 = first6Y + (int) (first6Width * 5);
+            int y7 = first6Y + (int)(first6Width*5);
             for (int i = 0; i < energyDispenser.getFirstSix().size(); i++) {
                 g.drawImage(marbleToColor(energyDispenser.getFirstSix().get(i).getOldColor()), x7, y7, first6Width, first6Width, null);
                 y7 -= first6Width;
@@ -955,6 +1069,7 @@ public class GamePanel extends JPanel implements MouseListener {
     }
 
 
+
 //    public int getDisplayPromptChoice(int displayPromptChoice)
 //    {
 //        switch (displayPromptChoice)
@@ -1132,9 +1247,13 @@ public class GamePanel extends JPanel implements MouseListener {
         int numOfCards = currentPlayer.getToolBar().getCards().get(type).size();
         int distance = y - topLeftYCoord;
         int cardsOwnedLength = ownedCardsHeaderLength * (numOfCards - 1) + cardWidth;
+        int index;
 
-        if (distance <= ownedCardsHeaderLength * numOfCards)
-            return (int) (y - topLeftYCoord / ownedCardsHeaderLength);
+
+        if (distance <= ownedCardsHeaderLength * numOfCards) {
+            index = (int) ((y - topLeftYCoord) / ownedCardsHeaderLength);
+            return index;
+        }
         else if (distance <= cardsOwnedLength)
             return numOfCards - 1;
         else
@@ -1187,10 +1306,9 @@ public class GamePanel extends JPanel implements MouseListener {
      *
      * @param x             mouseListener x
      * @param y             mouseListener y
-     * @param currentPlayer currentPlayer
-     * @return returns the index of which marble is clicked
+     * @return returns the index of which marble is clicked in the prompt
      */
-    public int getConvertMarbleClicked(int x, int y, Player currentPlayer) {
+    public int getConvertMarbleClicked(int x, int y) {
         int colorOfMarblesSize = getDistinctColorsInRing(currentPlayer).size();
         if (y >= promptROrBCardRow1Y + (int) (cardWidth / 2.0) && y <= promptROrBCardRow1Y + cardWidth) {
             int index = (int) ((x - promptROrBCardRow1X) / (int) (cardWidth / 2.0));
@@ -1301,8 +1419,8 @@ public class GamePanel extends JPanel implements MouseListener {
             tier1SectionClicked = true;
             int index1 = getTierCardIndexClicked(x, "Tier1Cards");
             cardIsClicked = true;
+            tierCardClickedIndex = index1;
             cardClicked = deck.getTier1()[index1];
-            deck.addCardToTier1(index1);
             tier1SectionClickable = false;
         }
         // Tier 2 Section
@@ -1311,7 +1429,7 @@ public class GamePanel extends JPanel implements MouseListener {
             int index1 = getTierCardIndexClicked(x, "Tier2Cards");
             cardIsClicked = true;
             cardClicked = deck.getTier2()[index1];
-            deck.addCardToTier2(index1);
+            tierCardClickedIndex = index1;
             tier2SectionClickable = false;
         }
         // Tier 3 Section
@@ -1320,7 +1438,7 @@ public class GamePanel extends JPanel implements MouseListener {
             int index1 = getTierCardIndexClicked(x, "Tier3Cards");
             cardIsClicked = true;
             cardClicked = deck.getTier3()[index1];
-            deck.addCardToTier3(index1);
+            tierCardClickedIndex = index1;
             tier3SectionClickable = false;
         }
         // first 6 marbles section
@@ -1330,7 +1448,7 @@ public class GamePanel extends JPanel implements MouseListener {
                 first6Clicked = true;
                 marbleClickedIndex = index;
                 first6MarbleClickable = false;
-                out.println("index of marble clicked = " + index);
+//                out.println("index of marble clicked = "+ index);
                 cardIsClicked = false;
             }
         }
@@ -1368,11 +1486,19 @@ public class GamePanel extends JPanel implements MouseListener {
         // Converting marbles color
         // don't reset bc convert method choice might need to redraw marbles for player to click on again like any to any
         else if (displayPromptChoice == 3 && convertSectionClicked && marblesVisible) {
-            int playerConvertChoice = currentPlayer.getConvertMethodClicked();
+            int playerConvertChoice = currentPlayer.getConvertMethod();
             if (playerConvertChoice == 3)
                 drawOwnedMarbleOnlyForConvert = true;
             else
                 drawOwnedMarbleOnlyForConvert = false;
+        }
+        else if (displayPromptChoice == 3 && marbleColorClicked)
+        {
+            int index2 = getConvertMarbleClicked(x, y);
+            if (index2 != -100)
+            {
+                marbleClickedIndex = index2;
+            }
         }
 
         // Research Section
@@ -1412,7 +1538,7 @@ public class GamePanel extends JPanel implements MouseListener {
      * @return the choice from 1-3
      */
     public int getConvertMethodInPrompt(Player currentPlayer) {
-        return currentPlayer.getConvertMethodClicked();
+        return currentPlayer.getConvertMethod();
     }
 
 
@@ -1467,57 +1593,18 @@ public class GamePanel extends JPanel implements MouseListener {
             System.out.println("Game Started!");
             gameStart = true;
             startGameButtonClicked = true;
-            startOfPlayerTurn = true;
-            fileButtonVisible = true;
-            pickButtonVisible = true;
-            buildButtonVisible = true;
-            researchButtonVisible = true;
             displayPromptChoice = 1;
         }
         getObjectClicked(x, y);
 
 
         out.println("( " + x + ", " + y + " )");
-        // player clicks on card to file from the 3 tiers
-        // player clicks on 4 buttons
-        // after player clicks on build, show two buttons: field and archive and allow player to choose one
         // player clicks on one of the 3 tiers and then clicks on a card to research
         repaint();
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-//        int x = e.getX();
-//        int y = e.getY();
-//        if (x >= 566 && x <= 1052 && y >= 734 && y <= 805 && gameStart == false) {
-//            rulesButtonClicked = true;
-//            repaint();
-//            System.out.println("Downloaded Rules");
-//            waitForSeconds(2);
-//            downloadRules();
-//        }
-//        if (x >= 514 && x <= 1086 && y >= 586 && y <= 721 && gameStart == false) {
-//            System.out.println("Game Started!");
-//            gameStart = true;
-//            startGameButtonClicked = true;
-//            startOfPlayerTurn = true;
-//            fileButtonVisible = true;
-//            pickButtonVisible = true;
-//            buildButtonVisible = true;
-//            researchButtonVisible = true;
-//            displayPromptChoice = 1;
-//        }
-//        getObjectClicked(x, y);
-//
-//
-//        out.println("( " + x + ", " + y + " )");
-//        out.println("fileButtonClicked:" + fileButtonClicked);
-//        out.println("fileButtonVisible:" + fileButtonVisible);
-//        // player clicks on card to file from the 3 tiers
-//        // player clicks on 4 buttons
-//        // after player clicks on build, show two buttons: field and archive and allow player to choose one
-//        // player clicks on one of the 3 tiers and then clicks on a card to research
-//        repaint();
     }
 
     @Override
@@ -1625,6 +1712,17 @@ public class GamePanel extends JPanel implements MouseListener {
 
     public void waitForConvertorCardChoice() {
         while (!convertSectionClicked) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    public void waitForConvertColorChoice()
+    {
+        while (!marbleColorClicked) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
