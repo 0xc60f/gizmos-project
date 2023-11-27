@@ -72,7 +72,13 @@ public class GamePanel extends JPanel implements MouseListener {
         playerList = new ArrayList<>();
         archiveCardCoord = new TreeMap<Integer, Integer>();
 
-        IntStream.rangeClosed(1, 4).forEach(i -> playerList.add(new Player(i)));
+        IntStream.rangeClosed(1, 4).forEach(i -> {
+            try {
+                playerList.add(new Player(i));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         try {
             deck = new Deck();
