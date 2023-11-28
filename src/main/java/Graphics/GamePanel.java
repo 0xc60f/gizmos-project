@@ -59,7 +59,8 @@ public class GamePanel extends JPanel implements MouseListener {
     private GizmoCard cardClicked;
     private boolean cardIsClicked, archiveCardClicked, drawOwnedMarbleOnlyForConvert, marbleColorClicked;
     private boolean archiveSectionClickable, upgradeSectionClickable, convertSectionClickable, fileSectionClickable, pickSectionClickable, buildSectionClickable, researchingCardsClickable, first6Clickable;
-    private boolean tier1SectionClickable, tier2SectionClickable, tier3SectionClickable, first6MarbleClickable;
+    private boolean tier1SectionClickable, tier2SectionClickable, tier3SectionClickable, first6MarbleClickable, tier1CoverClicked, tier2CoverClicked, tier3CoverClicked;
+    private boolean tier1CoverClickable, tier2CoverClickable, tier3CoverClickable;
     private TreeMap<String, int[]> generalSectionCoord;
     private int displayPromptChoice, tierCardClickedIndex;
 
@@ -190,6 +191,12 @@ public class GamePanel extends JPanel implements MouseListener {
         first6MarbleClickable = false;
         startGameButtonClicked = false;
         marbleColorClicked = false;
+        tier1CoverClicked = false;
+        tier2CoverClicked = false;
+        tier3CoverClicked = false;
+        tier1CoverClickable = false;
+        tier2CoverClickable = false;
+        tier3CoverClickable = false;
     }
 
     public void resetVisibleFlags() {
@@ -395,14 +402,24 @@ public class GamePanel extends JPanel implements MouseListener {
             archiveSectionClickable = false;
 
         }
+        //Research
         else if (researchButtonClicked)
         {
             set4ActionsInvisible();
             startOfPlayerTurn = false;
-            tier1SectionClickable = true;
-            tier2SectionClickable = true;
-            tier3SectionClickable = true;
-            setPrompt("")
+            tier1CoverClickable = true;
+            tier2CoverClickable = true;
+            tier3CoverClickable = true;
+            setPrompt("Choose a tier to research from");
+            repaint();
+            waitForResearchTierChoice();
+            for(int i = 0; i < currentPlayer.getMaxResearch(); i++)
+            {
+            TreeSet<GizmoCard>researching.add(tierplayerchose.pop());
+            }
+            setPrompt("Choose a card to research");
+            repaint();
+
         }
         setPrompt("Click the end turn button to go to the next player");
         displayPromptChoice = 6;
@@ -475,39 +492,37 @@ public class GamePanel extends JPanel implements MouseListener {
 
     public void oneColor1Or2ToAny()
     {
-        if (currentPlayer.getEnergyRing().size()+1 <= currentPlayer.getMaxResearch()) {
-            boolean color1Found = false;
-            boolean color2Found = false;
-            for (int i = 0; i < currentPlayer.getEnergyRing().size(); i++) {
-                if (currentPlayer.getEnergyRing().get(i).getOldColor() == cardClicked.getColor1())
-                    color1Found = true;
-                if (currentPlayer.getEnergyRing().get(i).getOldColor() == cardClicked.getColor2())
-                    color2Found = true;
-            }
-            if (!color1Found || !color2Found) {
-                setPrompt("You do not have any marbles of those colors to convert");
-                repaint();
-                waitForSeconds(0.5);
-            } else {
-                if (color1Found) {
-                    setPrompt("");
-                }
-                displayPromptChoice = 3;
-                currentPlayer.setConvertMethod(1);
-                marblesVisible = true;
-                repaint();
-                waitForConvertColorChoice();
-                for (int i = 0; i < currentPlayer.getEnergyRing().size(); i++)
-                    if (currentPlayer.getEnergyRing().get(i).getOldColor() == marbleClickIndexToColor(marbleClickedIndex))
-                        currentPlayer.getEnergyRing().get(i).setNewColor(marbleClickIndexToColor(marbleClickedIndex));
-                setPrompt("You converted your marble!");
-                repaint();
-                waitForSeconds(1);
-            }
-        }
-        else if (currentPlayer.getEnergyRing().size()+2 <= currentPlayer.getMaxResearch())
+        boolean colorFound = false;
+        for (int i = 0; i < currentPlayer.getEnergyRing().size(); i++)
         {
-
+            if (currentPlayer.getEnergyRing().get(i).getOldColor() == cardClicked.getColor1())
+                colorFound = true;
+            if (currentPlayer.getEnergyRing().get(i).getOldColor() == cardClicked.getColor2())
+                colorFound = true;
+        }
+        if (!colorFound && !colorFound)
+        {
+            setPrompt("You do not have any marbles of those colors to convert");
+            repaint();
+            waitForSeconds(0.5);
+        }
+        else
+        {
+            if (colorFound)
+            {
+                setPrompt("");
+            }
+            displayPromptChoice = 3;
+            currentPlayer.setConvertMethod(1);
+            marblesVisible = true;
+            repaint();
+            waitForConvertColorChoice();
+            for (int i = 0; i < currentPlayer.getEnergyRing().size(); i++)
+                if (currentPlayer.getEnergyRing().get(i).getOldColor() == marbleClickIndexToColor(marbleClickedIndex))
+                    currentPlayer.getEnergyRing().get(i).setNewColor(marbleClickIndexToColor(marbleClickedIndex));
+            setPrompt("You converted your marble!");
+            repaint();
+            waitForSeconds(1);
         }
         else
         {
@@ -1446,29 +1461,39 @@ public class GamePanel extends JPanel implements MouseListener {
             tier1SectionClicked = true;
             int index1 = getTierCardIndexClicked(x, "Tier1Cards");
             if (index1 == -1)
-
-            cardIsClicked = true;
-            tierCardClickedIndex = index1;
-            cardClicked = deck.getTier1()[index1];
-            tier1SectionClickable = false;
+                tier1CoverClicked = true;
+            else {
+                cardIsClicked = true;
+                tierCardClickedIndex = index1;
+                cardClicked = deck.getTier1()[index1];
+                tier1SectionClickable = false;
+            }
         }
         // Tier 2 Section
         else if (tier2SectionClickable == true && x >= generalSectionCoord.get("Tier2Cards")[0] && y >= generalSectionCoord.get("Tier2Cards")[1] && x <= generalSectionCoord.get("Tier2Cards")[2] && y <= generalSectionCoord.get("Tier2Cards")[3]) {
             tier2SectionClicked = true;
             int index1 = getTierCardIndexClicked(x, "Tier2Cards");
-            cardIsClicked = true;
-            cardClicked = deck.getTier2()[index1];
-            tierCardClickedIndex = index1;
-            tier2SectionClickable = false;
+            if (index1 == -1)
+                tier2CoverClicked = true;
+            else {
+                cardIsClicked = true;
+                cardClicked = deck.getTier2()[index1];
+                tierCardClickedIndex = index1;
+                tier2SectionClickable = false;
+            }
         }
         // Tier 3 Section
         else if (tier3SectionClickable == true && x >= generalSectionCoord.get("Tier3Cards")[0] && y >= generalSectionCoord.get("Tier3Cards")[1] && x <= generalSectionCoord.get("Tier3Cards")[2] && y <= generalSectionCoord.get("Tier3Cards")[3]) {
             tier3SectionClicked = true;
             int index1 = getTierCardIndexClicked(x, "Tier3Cards");
-            cardIsClicked = true;
-            cardClicked = deck.getTier3()[index1];
-            tierCardClickedIndex = index1;
-            tier3SectionClickable = false;
+            if (index1 == -1)
+                tier3CoverClicked = true;
+            else {
+                cardIsClicked = true;
+                cardClicked = deck.getTier3()[index1];
+                tierCardClickedIndex = index1;
+                tier3SectionClickable = false;
+            }
         }
         // first 6 marbles section
         else if (first6MarbleClickable == true && x >= generalSectionCoord.get("First6Marbles")[0] && y >= generalSectionCoord.get("First6Marbles")[1] && x <= generalSectionCoord.get("First6Marbles")[2] && y <= generalSectionCoord.get("First6Marbles")[3]) {
@@ -1762,7 +1787,7 @@ public class GamePanel extends JPanel implements MouseListener {
 
     public void waitForResearchTierChoice()
     {
-        while (!tier1SectionClicked && !tier2SectionClicked && !tier3SectionClicked) {
+        while (!tier1CoverClicked && !tier2CoverClicked && !tier3CoverClicked) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
