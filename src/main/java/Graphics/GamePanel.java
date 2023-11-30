@@ -60,7 +60,7 @@ public class GamePanel extends JPanel implements MouseListener {
     private boolean cardIsClicked, archiveCardClicked, drawOwnedMarbleOnlyForConvert, marbleColorClicked;
     private boolean archiveSectionClickable, upgradeSectionClickable, convertSectionClickable, fileSectionClickable, pickSectionClickable, buildSectionClickable, researchingCardsClickable, first6Clickable;
     private boolean tier1SectionClickable, tier2SectionClickable, tier3SectionClickable, first6MarbleClickable, tier1CoverClicked, tier2CoverClicked, tier3CoverClicked;
-    private boolean tier1CoverClickable, tier2CoverClickable, tier3CoverClickable;
+    private boolean tier1CoverClickable, tier2CoverClickable, tier3CoverClickable, drawTier1Cards, drawTier2Cards, drawTier3Cards, drawResearchingCards;
     private TreeMap<String, int[]> generalSectionCoord;
     private int displayPromptChoice, tierCardClickedIndex;
 
@@ -197,6 +197,10 @@ public class GamePanel extends JPanel implements MouseListener {
         tier1CoverClickable = false;
         tier2CoverClickable = false;
         tier3CoverClickable = false;
+        drawTier1Cards = false;
+        drawTier2Cards = false;
+        drawTier3Cards = false;
+        drawResearchingCards = false;
     }
 
     public void resetVisibleFlags() {
@@ -378,7 +382,7 @@ public class GamePanel extends JPanel implements MouseListener {
 
             if (count >= cost) {
                 currentPlayer.build(cardClicked, cost, colorOfMarble, energyDispenser);
-                setPrompt("You build the gizmo!");
+                setPrompt("You built the gizmo!");
                 repaint();
                 if (tier1SectionClicked)
                     deck.addCardToTier1(tierCardClickedIndex);
@@ -413,13 +417,23 @@ public class GamePanel extends JPanel implements MouseListener {
             setPrompt("Choose a tier to research from");
             repaint();
             waitForResearchTierChoice();
-            for(int i = 0; i < currentPlayer.getMaxResearch(); i++)
-            {
-            TreeSet<GizmoCard>researching.add(tierplayerchose.pop());
-            }
+            if (tier1CoverClicked)
+                for (int i = 0; i < currentPlayer.getMaxResearch(); i++)
+                    currentPlayer.getCardsResearching().add(deck.getDeck1().pop());
+            if (tier2CoverClicked)
+                for (int i = 0; i < currentPlayer.getMaxResearch(); i++)
+                    currentPlayer.getCardsResearching().add(deck.getDeck2().pop());
+            if (tier3CoverClicked)
+                for (int i = 0; i < currentPlayer.getMaxResearch(); i++)
+                    currentPlayer.getCardsResearching().add(deck.getDeck3().pop());
+
             setPrompt("Choose a card to research");
             repaint();
-
+            waitForResearchCardChoice();
+            setPrompt("Do you want to File or Build");
+            repaint();
+            //Wait for player choice of file or build
+            fileOrBuild();
         }
         setPrompt("Click the end turn button to go to the next player");
         displayPromptChoice = 6;
@@ -889,7 +903,7 @@ public class GamePanel extends JPanel implements MouseListener {
             }
 
             //researching in prompt
-            if (tier1SectionClicked || tier2SectionClicked || tier3SectionClicked) {
+            if (drawTier1Cards || drawTier2Cards || drawTier3Cards) {
                 z = 0;
                 x2 = promptROrBCardRow1X;
                 x3 = promptROrBCardRow2X;
@@ -906,8 +920,10 @@ public class GamePanel extends JPanel implements MouseListener {
                     }
                     z++;
                 }
+
+
             }
-            if (researchingCardsClicked) {
+            if (drawResearchingCards) {
                 x4 = promptROrBCardRow1X;
                 y4 = promptROrBCardRow1Y + (int) (cardWidth / 4.0);
                 g.drawImage(cardClicked.getImage(), promptROrBCardRow1X + (int) (cardWidth * 4), promptROrBCardRow1Y + (int) (cardWidth / 4.0), cardWidth, cardWidth, null);
@@ -1461,7 +1477,7 @@ public class GamePanel extends JPanel implements MouseListener {
             tier1SectionClicked = true;
             int index1 = getTierCardIndexClicked(x, "Tier1Cards");
             if (index1 == -1)
-                tier1CoverClicked = true;
+                drawTier1Cards = true;
             else {
                 cardIsClicked = true;
                 tierCardClickedIndex = index1;
@@ -1474,7 +1490,7 @@ public class GamePanel extends JPanel implements MouseListener {
             tier2SectionClicked = true;
             int index1 = getTierCardIndexClicked(x, "Tier2Cards");
             if (index1 == -1)
-                tier2CoverClicked = true;
+                drawTier2Cards = true;
             else {
                 cardIsClicked = true;
                 cardClicked = deck.getTier2()[index1];
@@ -1487,7 +1503,7 @@ public class GamePanel extends JPanel implements MouseListener {
             tier3SectionClicked = true;
             int index1 = getTierCardIndexClicked(x, "Tier3Cards");
             if (index1 == -1)
-                tier3CoverClicked = true;
+                drawTier3Cards = true;
             else {
                 cardIsClicked = true;
                 cardClicked = deck.getTier3()[index1];
@@ -1555,11 +1571,11 @@ public class GamePanel extends JPanel implements MouseListener {
             }
         }
 
-        // Research Section
+        // Research card clicked
         else if (displayPromptChoice == 4 && researchingCardsVisible) {
             index = getResearchCardIndexClicked(x, y, currentPlayer);
             if (index != -100) {
-                researchingCardsClicked = true;
+                drawResearchingCards = true;
                 cardClicked = currentPlayer.getCardsResearching().get(index);
                 fileButtonVisible = true;
                 buildButtonVisible = true;
@@ -1576,10 +1592,12 @@ public class GamePanel extends JPanel implements MouseListener {
 
             fileButtonVisible = false;
             buildButtonVisible = false;
-        } else if (displayPromptChoice == 6 && endTurnButtonVisible) {
+        }
+        else if (displayPromptChoice == 6 && endTurnButtonVisible) {
             if (x >= generalSectionCoord.get("EndTurn")[0] && y >= generalSectionCoord.get("EndTurn")[1] && x <= generalSectionCoord.get("EndTurn")[2] && y <= generalSectionCoord.get("EndTurn")[3])
                 endTurnButtonClicked = true;
         }
+
     }
 
     /**
@@ -1787,7 +1805,18 @@ public class GamePanel extends JPanel implements MouseListener {
 
     public void waitForResearchTierChoice()
     {
-        while (!tier1CoverClicked && !tier2CoverClicked && !tier3CoverClicked) {
+        while (!researchingCardsClicked) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    public void waitForResearchCardChoice()
+    {
+        while (!researchingCardsClicked) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
