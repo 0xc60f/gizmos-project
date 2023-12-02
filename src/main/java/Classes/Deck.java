@@ -150,6 +150,7 @@ public class Deck {
         level1.push(new GizmoCard(MarbleColor.YELLOW, 1,1, GizmoType.UPGRADE, "e1f1", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Yellow9Rank1.png"))), GizmoLevel.LEVEL1));
         level2.push(new GizmoCard(MarbleColor.YELLOW, 3,3, GizmoType.BUILD, "buildthisorthatget1victorypoint", 3, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Yellow9Rank2.png"))), MarbleColor.RED, MarbleColor.BLUE, GizmoLevel.LEVEL2));
 
+        level3.subList(16, level3.size()).clear();
     }
 
     /**
