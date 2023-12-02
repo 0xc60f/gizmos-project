@@ -14,6 +14,7 @@ public class Marble {
      */
     public Marble(MarbleColor color) {
         originalColor = color;
+        newColor = originalColor;
     }
 
     /**
