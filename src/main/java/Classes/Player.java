@@ -44,6 +44,10 @@ public class Player implements Comparable<Player>
 //        archive = list;
 //    }
 
+    public void setMaxArchive(int x)
+    {
+        maxArchive = x;
+    }
     public ArrayList<GizmoCard> getCardsResearching()
     {
         return cardsResearching;
@@ -171,7 +175,7 @@ public class Player implements Comparable<Player>
         {
             if (cost == 0)
                 break;
-            else if (energyRing.getRing().get(i).getOldColor() == color) {
+            else if (energyRing.getRing().get(i).getNewColor() == color) {
                 energyDispenser.getMarbles().add(energyRing.getRing().remove(i));
                 i--;
                 cost--;

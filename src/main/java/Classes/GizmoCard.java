@@ -103,10 +103,7 @@ public class GizmoCard implements Card, CardEffect {
 
     }
 
-    public MarbleColor getColor1() {
-        return color1;
-    }
-
+    public MarbleColor getColor1() { return color1; }
     public MarbleColor getColor2() {
         return color2;
     }

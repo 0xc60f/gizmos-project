@@ -7,6 +7,7 @@ package Classes;
 public class Marble {
     private MarbleColor originalColor;
     private MarbleColor newColor;
+    private boolean extraAdded;
 
     /**
      * Creates a marble with the given color, which is a <code>MarbleColor</code> enum.
@@ -24,6 +25,11 @@ public class Marble {
     public void setOldColor(MarbleColor color) {
         originalColor = color;
     }
+    public boolean getExtraAdded() {
+        return extraAdded;
+    }
+
+    public void setExtraAdded(boolean b) { extraAdded = b; }
 
     /**
      * Gets the color of the marble, which is a <code>MarbleColor</code> enum.
