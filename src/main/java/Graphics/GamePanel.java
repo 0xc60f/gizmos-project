@@ -280,7 +280,6 @@ public class GamePanel extends JPanel implements MouseListener {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     /**
