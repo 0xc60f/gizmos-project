@@ -50,6 +50,8 @@ public class GamePanel extends JPanel implements MouseListener {
     private int smallVPTitleX, smallVPTitleY, smallVPTitleWidth, smallVPTitleLength, smallVPX, smallVPY, smallVPWidth, smallVPlength;
     private MarbleColor colorClicked;
     private GizmoCard cardClicked;
+    private GizmoCard mostRecentCardActivated;
+    private MarbleColor mostRecentMarblePicked;
     private boolean archiveSectionClicked, convertSectionClicked, fileSectionClicked, pickSectionClicked, buildSectionClicked, researchingCardsClicked, first6Clicked;
     private boolean tier1SectionClicked, tier2SectionClicked, tier3SectionClicked, rulesButtonClicked, startOfPlayerTurn;
     private boolean fileButtonVisible, pickButtonVisible, buildButtonVisible, researchButtonVisible, endTurnButtonVisible, fieldButtonVisible, archiveButtonVisible, yesButtonVisible, noButtonVisible, researchingCardsVisible, marblesVisible;
@@ -769,7 +771,21 @@ public class GamePanel extends JPanel implements MouseListener {
     public HashSet<GizmoCard> getAllTriggeredCards()
     {
         HashSet<GizmoCard> activatableCards = new HashSet<GizmoCard>();
-
+        HashSet<GizmoCard> allPlayerCards = currentPlayer.getToolBar().getCards().values().stream().flatMap(Collection::stream).collect(Collectors.toCollection(HashSet::new));
+        GizmoType type = mostRecentCardActivated.getType();
+        switch (type){
+            case FILE -> activatableCards = allPlayerCards.stream().filter(c -> c.getType().equals(GizmoType.FILE)).collect(Collectors.toCollection(HashSet::new));
+            case PICK -> {
+                for (GizmoCard c : allPlayerCards)
+                    if (c.getType().equals(GizmoType.PICK) && mostRecentMarblePicked == c.getColor1() || mostRecentMarblePicked == c.getColor2())
+                        activatableCards.add(c);
+            }
+            case BUILD -> {
+                for (GizmoCard c : allPlayerCards)
+                    if (c.getType().equals(GizmoType.BUILD) && mostRecentCardActivated.getColorOfCost() == c.getColor1() || mostRecentCardActivated.getColorOfCost() == c.getColor2())
+                        activatableCards.add(c);
+            }
+        }
         return activatableCards;
     }
 
