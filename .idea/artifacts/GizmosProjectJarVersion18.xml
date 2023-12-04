@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="GizmosProjectJarVersion18">
+    <output-path>$PROJECT_DIR$/out/artifacts/GizmosProjectJarVersion18</output-path>
+    <root id="archive" name="gizmos-project.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/out/artifacts/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="gizmos-project" />
+    </root>
+  </artifact>
+</component>

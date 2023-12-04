@@ -48,6 +48,10 @@ public class Player implements Comparable<Player>
     {
         maxArchive = x;
     }
+    public void setMaxResearch(int x)
+    {
+        maxResearch = x;
+    }
     public ArrayList<GizmoCard> getCardsResearching()
     {
         return cardsResearching;
@@ -231,7 +235,20 @@ public class Player implements Comparable<Player>
      */
     public int getScore()
     {
-        return score;
+        int totalScore = 0;
+
+        for (int j = 0; j < toolbar.getCards().get(GizmoType.UPGRADE).size(); j++)
+            totalScore += toolbar.getCards().get(GizmoType.UPGRADE).get(j).getNumOfVictoryPts();
+        for (int j = 0; j < toolbar.getCards().get(GizmoType.CONVERTOR).size(); j++)
+            totalScore += toolbar.getCards().get(GizmoType.CONVERTOR).get(j).getNumOfVictoryPts();
+        for (int j = 0; j < toolbar.getCards().get(GizmoType.FILE).size(); j++)
+            totalScore += toolbar.getCards().get(GizmoType.FILE).get(j).getNumOfVictoryPts();
+        for (int j = 0; j < toolbar.getCards().get(GizmoType.PICK).size(); j++)
+            totalScore += toolbar.getCards().get(GizmoType.PICK).get(j).getNumOfVictoryPts();
+        for (int j = 0; j < toolbar.getCards().get(GizmoType.BUILD).size(); j++)
+            totalScore += toolbar.getCards().get(GizmoType.BUILD).get(j).getNumOfVictoryPts();
+
+        return totalScore + getNumBonusVicPoints();
     }
 
     /**
@@ -241,6 +258,8 @@ public class Player implements Comparable<Player>
     {
         score += x;
     }
+
+
 
     /**
      * returns a HashSet of all available actions that the player can activate
