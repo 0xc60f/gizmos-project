@@ -145,9 +145,11 @@ public class Player implements Comparable<Player>
      * @param choice player's pick from the first 6 marbles
      * @param energyDispenser the first 6 marbles of the energyDispenser
      */
-    public void pickFrom6(int choice, ArrayList<Marble> energyDispenser)
+    public Marble pickFrom6(int choice, ArrayList<Marble> energyDispenser)
     {
-        energyRing.addMarble(energyDispenser.remove(choice));
+        Marble marble = energyDispenser.remove(choice);
+        energyRing.addMarble(marble);
+        return marble;
     }
 
     /**
@@ -156,17 +158,15 @@ public class Player implements Comparable<Player>
      * Removes a random marble from the energyDispenser and adds it to the player's energyRing
      * @param energyDispenser	copy of the energyDispenser in the energyDispenser class
      */
-    public ArrayList<Marble> pickRandom(ArrayList<Marble> energyDispenser)
+    public void pickRandom(EnergyDispenser energyDispenser)
     {
         if (energyRing.getRing().size() < energyRing.getEnergyRingMax())
         {
-            int size = energyDispenser.size();
+            int size = energyDispenser.getMarbles().size();
             Random rand = new Random();
             int randomChoice = rand.nextInt(size);
-            energyRing.addMarble(energyDispenser.remove(randomChoice));
-            return energyDispenser;
+            energyRing.addMarble(energyDispenser.getMarbles().remove(randomChoice));
         }
-        return energyDispenser;
     }
 
     /**
