@@ -304,6 +304,17 @@ public class GamePanel extends JPanel implements MouseListener {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        try {
+            playerList.get(2).getToolBar().getCards().get(GizmoType.UPGRADE).add(new GizmoCard(MarbleColor.YELLOW, 1,1, GizmoType.UPGRADE, "e1f1", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Yellow9Rank1.png"))), GizmoLevel.LEVEL1));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            playerList.get(3).getToolBar().getCards().get(GizmoType.BUILD).add(new GizmoCard(MarbleColor.YELLOW, 5,5, GizmoType.BUILD, "buildThisOrThatGet2VictoryPoints", 6, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Yellow3Rank3.png"))), GizmoLevel.LEVEL3));
+            playerList.get(3).getToolBar().getCards().get(GizmoType.PICK).add(new GizmoCard(MarbleColor.YELLOW, 1,1, GizmoType.PICK, "pickPickRandom", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Yellow5Rank1.png"))), MarbleColor.RED, GizmoLevel.LEVEL1));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -338,7 +349,7 @@ public class GamePanel extends JPanel implements MouseListener {
             repaint();
             waitForFileCardChoice();
             fileAction();
-            chainReactionStart = true;
+//            chainReactionStart = true;
         }
         else if (pickButtonClicked)
         {
@@ -350,7 +361,7 @@ public class GamePanel extends JPanel implements MouseListener {
             waitForPickMarbleClick();
 //            waitForSeconds(0.5);
             pickFrom6Action();
-            chainReactionStart = true;
+//            chainReactionStart = true;
         }
         else if (buildButtonClicked)
         {
@@ -365,7 +376,7 @@ public class GamePanel extends JPanel implements MouseListener {
             waitForBuildCardChoice();
 //            waitForSeconds(0.5);
             buildAction();
-            chainReactionStart = true;
+//            chainReactionStart = true;
 
         }
         //Research
@@ -399,6 +410,21 @@ public class GamePanel extends JPanel implements MouseListener {
             waitForResearchCardChoice();
 
             researchingCardsVisible = false;
+            if (tier1CoverClicked)
+                for (int i = 0; i < currentPlayer.getCardsResearching().size(); i++) {
+                    if (currentPlayer.getCardsResearching().get(i) != cardClicked)
+                        deck.getDeck1().add(0, currentPlayer.getCardsResearching().get(i));
+                }
+            if (tier2CoverClicked)
+                for (int i = 0; i < currentPlayer.getCardsResearching().size(); i++) {
+                    if (currentPlayer.getCardsResearching().get(i) != cardClicked)
+                        deck.getDeck2().add(0, currentPlayer.getCardsResearching().get(i));
+                }
+            if (tier3CoverClicked)
+                for (int i = 0; i < currentPlayer.getCardsResearching().size(); i++) {
+                    if (currentPlayer.getCardsResearching().get(i) != cardClicked)
+                        deck.getDeck3().add(0, currentPlayer.getCardsResearching().get(i));
+                }
             drawTier1Cards = false;
             drawTier2Cards = false;
             drawTier3Cards = false;
@@ -429,7 +455,7 @@ public class GamePanel extends JPanel implements MouseListener {
                 repaint();
                 buildAction();
             }
-            chainReactionStart = true;
+//            chainReactionStart = true;
         }
         setPrompt("Click the end turn button to go to the next player");
         displayPromptChoice = 6;
@@ -458,7 +484,6 @@ public class GamePanel extends JPanel implements MouseListener {
             repaint();
             waitForSeconds(1);
         }
-
     }
 
     public void pickFrom6Action()
@@ -469,18 +494,18 @@ public class GamePanel extends JPanel implements MouseListener {
         waitForSeconds(0.5);
 
         //chain reaction checking part
-        if (mostRecentMarblePicked.getNewColor() == mostRecentCardActivated.getColor1() && mostRecentCardActivated.getColor2() == null) {
-            currentPlayer.pickRandom(energyDispenser);
-            setPrompt("You picked a random marble!");
-            repaint();
-            waitForSeconds(0.5);
-        }
-        else if (mostRecentMarblePicked.getNewColor() == mostRecentCardActivated.getColor1() || mostRecentMarblePicked.getNewColor() == mostRecentCardActivated.getColor2()) {
-            currentPlayer.pickRandom(energyDispenser);
-            setPrompt("You picked a random marble!");
-            repaint();
-            waitForSeconds(0.5);
-        }
+//        if (mostRecentMarblePicked.getNewColor() == mostRecentCardActivated.getColor1() && mostRecentCardActivated.getColor2() == null) {
+//            currentPlayer.pickRandom(energyDispenser);
+//            setPrompt("You picked a random marble!");
+//            repaint();
+//            waitForSeconds(0.5);
+//        }
+//        else if (mostRecentMarblePicked.getNewColor() == mostRecentCardActivated.getColor1() || mostRecentMarblePicked.getNewColor() == mostRecentCardActivated.getColor2()) {
+//            currentPlayer.pickRandom(energyDispenser);
+//            setPrompt("You picked a random marble!");
+//            repaint();
+//            waitForSeconds(0.5);
+//        }
     }
     public void buildAction()
     {
@@ -603,7 +628,7 @@ public class GamePanel extends JPanel implements MouseListener {
                 i--;
             }
         }
-        if (cardBeingBuilt.getType() == GizmoType.CONVERTOR)
+        if (cardBeingBuilt.getType() == GizmoType.UPGRADE)
         {
             upgradeEffect(cardBeingBuilt.getEffectType());
         }
