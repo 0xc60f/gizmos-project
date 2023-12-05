@@ -480,78 +480,75 @@ public class GamePanel extends JPanel implements MouseListener {
             chainReactionStart = true;
         }
 
-
-        out.println(chainReactionStart);
-        out.println(triggeredCards);
-        if (chainReactionStart)
-        {
-            out.println(!triggeredCards.isEmpty());
-            while (!triggeredCards.isEmpty())
-            {
-                setPrompt("Please choose an available card to activate");
-                displayPromptChoice = 7;
-                chainReactionCardsVisible = true;
-                repaint();
-                waitForChainReactionCardChoice();
-
-                if (filed)
-                {
-                    if (cardClicked.getEffectType().equals("filePick1From6"))
-                        filePick1From6();
-                    else if (cardClicked.getEffectType().equals("filePick3Random"))
-                        filePick3Random();
-                    else if (cardClicked.getLevel() == GizmoLevel.LEVEL0)
-                        filePick1Random();
-                    else if (cardClicked.getEffectType().equals("fileGet1VictoryPoint"))
-                        fileGet1VictoryPoint();
-                }
-                else if (picked)
-                    pickEffects();
-                else if (built)
-                {
-                    if (mostRecentCardBuilt.getColorOfCost() == cardClicked.getColor1() && cardClicked.getColor2() == null)
-                    {
-                        if (cardClicked.getEffectType().equals("buildGet1VictoryPoint"))
-                            buildGet1VictoryPoint();
-                        else if (cardClicked.getEffectType().equals("buildPick1From6"))
-                            buildPick1From6();
-                    }
-                    else if (mostRecentCardBuilt.getColorOfCost() == cardClicked.getColor1() || mostRecentCardBuilt.getColorOfCost() == cardClicked.getColor2())
-                    {
-                        if (cardClicked.getEffectType().equals("buildThisOrThatGet2VictoryPoints"))
-                            buildThisOrThatGet2VictoryPoints();
-                        else if (cardClicked.getEffectType().equals("buildThisOrThatGet1VictoryPoint"))
-                            buildThisOrThatGet1VictoryPoint();
-                        else if (cardClicked.getEffectType().equals("buildThisOrThatResearch"))
-                            buildThisOrThatResearch();
-                        else if (cardClicked.getEffectType().equals("buildThisOrThatPick1From6"))
-                            buildThisOrThatPick1From6();
-                    }
-                }
-
-                setPrompt("Do you want to continue to keep activating cards?");
-                yesButtonClicked = false;
-                noButtonClicked = false;
-                yesButtonVisible = true;
-                noButtonVisible = true;
-                repaint();
-                waitForYesOrNoClick();
-                if (noButtonClicked)
-                {
-                    noButtonClicked = false;
-                    yesButtonVisible = false;
-                    noButtonVisible = false;
-                    repaint();
-                    break;
-                }
-                yesButtonClicked = false;
-                noButtonClicked = false;
-                yesButtonVisible = false;
-                noButtonVisible = false;
-                repaint();
-                triggeredCards = getAllTriggeredCards();
-            }
-        }
+//        getAllTriggeredCards();
+//        if (chainReactionStart)
+//        {
+//            while (!getAllTriggeredCards().isEmpty())
+//            {
+//                setPrompt("Please choose an available card to activate");
+//                displayPromptChoice = 7;
+//                chainReactionCardsVisible = true;
+//                repaint();
+//                waitForChainReactionCardChoice();
+//
+//                if (filed)
+//                {
+//                    if (cardClicked.getEffectType().equals("filePick1From6"))
+//                        filePick1From6();
+//                    else if (cardClicked.getEffectType().equals("filePick3Random"))
+//                        filePick3Random();
+//                    else if (cardClicked.getLevel() == GizmoLevel.LEVEL0)
+//                        filePick1Random();
+//                    else if (cardClicked.getEffectType().equals("fileGet1VictoryPoint"))
+//                        fileGet1VictoryPoint();
+//                }
+//                else if (picked)
+//                    pickEffects();
+//                else if (built)
+//                {
+//                    if (mostRecentCardBuilt.getColorOfCost() == cardClicked.getColor1() && cardClicked.getColor2() == null)
+//                    {
+//                        if (cardClicked.getEffectType().equals("buildGet1VictoryPoint"))
+//                            buildGet1VictoryPoint();
+//                        else if (cardClicked.getEffectType().equals("buildPick1From6"))
+//                            buildPick1From6();
+//                    }
+//                    else if (mostRecentCardBuilt.getColorOfCost() == cardClicked.getColor1() || mostRecentCardBuilt.getColorOfCost() == cardClicked.getColor2())
+//                    {
+//                        if (cardClicked.getEffectType().equals("buildThisOrThatGet2VictoryPoints"))
+//                            buildThisOrThatGet2VictoryPoints();
+//                        else if (cardClicked.getEffectType().equals("buildThisOrThatGet1VictoryPoint"))
+//                            buildThisOrThatGet1VictoryPoint();
+//                        else if (cardClicked.getEffectType().equals("buildThisOrThatResearch"))
+//                            buildThisOrThatResearch();
+//                        else if (cardClicked.getEffectType().equals("buildThisOrThatPick1From6"))
+//                            buildThisOrThatPick1From6();
+//                    }
+//                }
+//
+//                setPrompt("Do you want to continue to keep activating cards?");
+//                yesButtonClicked = false;
+//                noButtonClicked = false;
+//                yesButtonVisible = true;
+//                noButtonVisible = true;
+//                repaint();
+//                waitForYesOrNoClick();
+//                if (noButtonClicked)
+//                {
+//                    noButtonClicked = false;
+//                    yesButtonVisible = false;
+//                    noButtonVisible = false;
+//                    repaint();
+//                    break;
+//                }
+//                yesButtonClicked = false;
+//                noButtonClicked = false;
+//                yesButtonVisible = false;
+//                noButtonVisible = false;
+//                repaint();
+//                triggeredCards = getAllTriggeredCards();
+//            }
+//        }
         setPrompt("Click the end turn button to go to the next player");
         displayPromptChoice = 6;
 //        resetVisibleFlags();
@@ -701,6 +698,13 @@ public class GamePanel extends JPanel implements MouseListener {
                 deck.addCardToTier3(tierCardClickedIndex);
             repaint();
             waitForSeconds(0.5);
+            setPrompt("You can draw a random marble!");
+            repaint();
+            waitForSeconds(0.5);
+            currentPlayer.pickRandom(energyDispenser);
+            repaint();
+            waitForSeconds(0.7);
+
         }
         else{
             setPrompt("You do not have enough space in your archive");
@@ -1101,11 +1105,26 @@ public class GamePanel extends JPanel implements MouseListener {
     }
     public void filePick3Random()
     {
+        currentPlayer.pickRandom(energyDispenser);
+        setPrompt("You picked a random marble!");
+        repaint();
+        waitForSeconds(0.25);
+        currentPlayer.pickRandom(energyDispenser);
+        setPrompt("You picked a random marble!");
+        repaint();
+        waitForSeconds(0.25);
+        currentPlayer.pickRandom(energyDispenser);
+        setPrompt("You picked a random marble!");
+        repaint();
+        waitForSeconds(0.25);
 
     }
     public void filePick1Random()
     {
-
+        currentPlayer.pickRandom(energyDispenser);
+        setPrompt("You picked a random marble!");
+        repaint();
+        waitForSeconds(0.5);
     }
 
     public HashSet<GizmoCard> getAllTriggeredCards()
@@ -1114,6 +1133,9 @@ public class GamePanel extends JPanel implements MouseListener {
         HashSet<GizmoCard> allPlayerCards = currentPlayer.getToolBar().getCards().values().stream().flatMap(Collection::stream).collect(Collectors.toCollection(HashSet::new));
         if (mostRecentCardActivated == null)
             return activatableCards;
+        if (mostRecentCardActivated == null){
+            return activatableCards;
+        }
         GizmoType type = mostRecentCardActivated.getType();
         switch (type){
             case FILE -> {
@@ -1124,7 +1146,7 @@ public class GamePanel extends JPanel implements MouseListener {
             }
             case PICK -> {
                 for (GizmoCard c : allPlayerCards)
-                    if (c.getType().equals(GizmoType.PICK) && mostRecentMarblePicked.getOldColor().equals(c.getColor1()) || mostRecentMarblePicked.getOldColor().equals(c.getColor2()))
+                    if (c.getType().equals(GizmoType.PICK) && mostRecentColorPicked == c.getColor1() || mostRecentColorPicked == c.getColor2() && !c.isTriggered())
                         activatableCards.add(c);
             }
             case BUILD -> {
