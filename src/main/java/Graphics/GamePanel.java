@@ -340,7 +340,7 @@ public class GamePanel extends JPanel implements MouseListener {
         startOfPlayerTurn = true;
         endTurnButtonVisible = true;
         displayPromptChoice = 1;
-
+        HashSet<GizmoCard> triggeredCards = new HashSet<>();
         //check for the 4 main actions that can be activated
         if (currentPlayer.getArchive().size() < currentPlayer.getMaxArchive())
             fileButtonVisible = true;
@@ -366,6 +366,11 @@ public class GamePanel extends JPanel implements MouseListener {
             waitForFileCardChoice();
             fileAction();
             chainReactionStart = true;
+            for (int i = 0; i < currentPlayer.getToolBar().getCards().get(GizmoType.FILE).size(); i++)
+            {
+                if (currentPlayer.getToolBar().getCards().get(GizmoType.FILE).get(i).getLevel() == GizmoLevel.LEVEL0)
+                    triggeredCards.add(currentPlayer.getToolBar().getCards().get(GizmoType.FILE).get(i));
+            }
 
         }
         else if (pickButtonClicked)
@@ -475,12 +480,15 @@ public class GamePanel extends JPanel implements MouseListener {
             chainReactionStart = true;
         }
 
-        getAllTriggeredCards();
+
+        out.println(chainReactionStart);
+        out.println(triggeredCards);
         if (chainReactionStart)
         {
-            while (!getAllTriggeredCards().isEmpty())
+            out.println(!triggeredCards.isEmpty());
+            while (!triggeredCards.isEmpty())
             {
-                setPrompt("Please choose a card an available card to activate");
+                setPrompt("Please choose an available card to activate");
                 displayPromptChoice = 7;
                 chainReactionCardsVisible = true;
                 repaint();
@@ -541,6 +549,7 @@ public class GamePanel extends JPanel implements MouseListener {
                 yesButtonVisible = false;
                 noButtonVisible = false;
                 repaint();
+                triggeredCards = getAllTriggeredCards();
             }
         }
         setPrompt("Click the end turn button to go to the next player");
@@ -638,6 +647,17 @@ public class GamePanel extends JPanel implements MouseListener {
     }
     public void buildThisOrThatBuildTier1For0(){
         setPrompt("Select a card from Tier 1 to build for 0 marbles");
+        tier1SectionClickable = true;
+        repaint();
+        waitForBuildCardChoice();
+        //Copy the code to build a card from Tier 1 but with 0 marbles
+        GizmoType type = cardClicked.getType();
+        mostRecentCardBuilt = cardClicked;
+        currentPlayer.build(cardClicked, 0, mostRecentCardBuilt.getColorOfCost(), energyDispenser);
+        setPrompt("You built that card for 0 marbles!");
+        repaint();
+        waitForSeconds(0.5);
+
 
     }
     public void buildTier2Pick2From6(){
@@ -843,118 +863,6 @@ public class GamePanel extends JPanel implements MouseListener {
         tier2SectionClickable = false;
         tier3SectionClickable = false;
         archiveSectionClickable = false;
-    }
-    public void buildGet1VictoryPoint(){
-        setPrompt("You earned 1 bonus victory point!");
-        currentPlayer.addBonusVPTokens(new BonusVictoryPoint(1));
-        repaint();
-        waitForSeconds(0.5);
-    }
-    public void buildPick1From6(){
-        setPrompt("Pick a marble to add to your energy ring");
-        first6MarbleClickable = true;
-        repaint();
-        waitForPickMarbleClick();
-        currentPlayer.pickFrom6(marbleClickedIndex, energyDispenser.getMarbles());
-        setPrompt("You added that marble to your energy ring!");
-        repaint();
-        waitForSeconds(0.5);
-    }
-    public void buildThisOrThatGet1VictoryPoint(){
-        setPrompt("You earned 1 bonus victory point!");
-        currentPlayer.addBonusVPTokens(new BonusVictoryPoint(1));
-        repaint();
-        waitForSeconds(0.5);
-    }
-    public void buildThisOrThatPick1From6(){
-        setPrompt("Pick a marble to add to your energy ring");
-        first6MarbleClickable = true;
-        repaint();
-        waitForPickMarbleClick();
-        currentPlayer.pickFrom6(marbleClickedIndex, energyDispenser.getMarbles());
-        setPrompt("You added that marble to your energy ring!");
-        repaint();
-        waitForSeconds(0.5);
-    }
-    public void buildThisOrThatFile(){
-        setPrompt("Please choose a card from the 3 tiers to file.");
-        tier1SectionClickable = true;
-        tier2SectionClickable = true;
-        tier3SectionClickable = true;
-        repaint();
-        waitForFileCardChoice();
-        fileAction();
-    }
-    public void buildThisOrThatGet2VictoryPoints(){
-        setPrompt("You earned 2 bonus victory points!");
-        currentPlayer.addBonusVPTokens(new BonusVictoryPoint(1));
-        currentPlayer.addBonusVPTokens(new BonusVictoryPoint(1));
-        repaint();
-        waitForSeconds(0.5);
-    }
-    public void buildThisOrThatResearch(){
-        setPrompt("Please choose a card to research");
-        researchingCardsVisible = true;
-        repaint();
-        waitForResearchCardChoice();
-        researchingCardsVisible = false;
-        drawTier1Cards = false;
-        drawTier2Cards = false;
-        drawTier3Cards = false;
-        setPrompt("Do you want to File or Build that card?");
-        buildButtonVisible = false;
-        fileButtonVisible = false;
-        displayPromptChoice = 5;
-        fileButtonClicked = false;
-        buildButtonClicked = false;
-        researchButtonClicked = false;
-        pickButtonClicked = false;
-        repaint();
-        waitFor4ActionClick();
-
-        if (fileButtonClicked)
-        {
-            set4ActionsInvisible();
-            drawResearchingCards = false;
-
-            repaint();
-            fileAction();
-        }
-        else if (buildButtonClicked)
-        {
-            set4ActionsInvisible();
-            drawResearchingCards = false;
-            repaint();
-            buildAction();
-        }
-    }
-    public void buildThisOrThatBuildTier1For0(){
-
-    }
-    public void buildTier2Pick2From6(){
-        setPrompt("Pick a marble to add to your energy ring");
-        first6MarbleClickable = true;
-        repaint();
-        waitForPickMarbleClick();
-        currentPlayer.pickFrom6(marbleClickedIndex, energyDispenser.getMarbles());
-        setPrompt("You added that marble to your energy ring!");
-        repaint();
-        waitForSeconds(0.5);
-        setPrompt("Pick a marble to add to your energy ring");
-        first6MarbleClickable = true;
-        repaint();
-        waitForPickMarbleClick();
-        currentPlayer.pickFrom6(marbleClickedIndex, energyDispenser.getMarbles());
-        setPrompt("You added that marble to your energy ring!");
-        repaint();
-        waitForSeconds(0.5);
-    }
-    public void buildFromFileGet2VictoryPoints(){
-        setPrompt("You earned 2 bonus victory points!");
-        currentPlayer.addBonusVPTokens(new BonusVictoryPoint(1));
-        currentPlayer.addBonusVPTokens(new BonusVictoryPoint(1));
-        repaint();
-        waitForSeconds(0.5);
     }
 
     public void upgradeEffect(String effect)
@@ -1204,9 +1112,16 @@ public class GamePanel extends JPanel implements MouseListener {
     {
         HashSet<GizmoCard> activatableCards = new HashSet<GizmoCard>();
         HashSet<GizmoCard> allPlayerCards = currentPlayer.getToolBar().getCards().values().stream().flatMap(Collection::stream).collect(Collectors.toCollection(HashSet::new));
+        if (mostRecentCardActivated == null)
+            return activatableCards;
         GizmoType type = mostRecentCardActivated.getType();
         switch (type){
-            case FILE -> activatableCards = allPlayerCards.stream().filter(c -> c.getType().equals(GizmoType.FILE)).collect(Collectors.toCollection(HashSet::new));
+            case FILE -> {
+                activatableCards = allPlayerCards.stream().filter(c -> c.getType().equals(GizmoType.FILE)).collect(Collectors.toCollection(HashSet::new));
+                for (GizmoCard c : allPlayerCards)
+                    if (c.getType().equals(GizmoType.FILE) && c.getLevel() == GizmoLevel.LEVEL0)
+                        activatableCards.add(c);
+            }
             case PICK -> {
                 for (GizmoCard c : allPlayerCards)
                     if (c.getType().equals(GizmoType.PICK) && mostRecentMarblePicked.getOldColor().equals(c.getColor1()) || mostRecentMarblePicked.getOldColor().equals(c.getColor2()))
