@@ -763,7 +763,26 @@ public class GamePanel extends JPanel implements MouseListener {
         waitForSeconds(0.5);
         cardClicked.setTriggered(true);
     }
-
+    public void buildFromFilePick2From6()
+    {
+        setPrompt("Pick a marble to add to your energy ring");
+        first6MarbleClickable = true;
+        repaint();
+        waitForPickMarbleClick();
+        currentPlayer.pickFrom6(marbleClickedIndex, energyDispenser.getMarbles());
+        setPrompt("You added that marble to your energy ring!");
+        repaint();
+        waitForSeconds(0.5);
+        setPrompt("Pick a marble to add to your energy ring");
+        first6MarbleClickable = true;
+        repaint();
+        waitForPickMarbleClick();
+        currentPlayer.pickFrom6(marbleClickedIndex, energyDispenser.getMarbles());
+        setPrompt("You added that marble to your energy ring!");
+        repaint();
+        waitForSeconds(0.5);
+        cardClicked.setTriggered(true);
+    }
     public void fileAction()
     {
         if (currentPlayer.getArchive().size() < currentPlayer.getMaxArchive()) {
@@ -1255,6 +1274,13 @@ public class GamePanel extends JPanel implements MouseListener {
                 if ((c.getType().equals(GizmoType.BUILD)) && (!c.isTriggered()) && (mostRecentCardBuilt.getColorOfCost() == c.getColor1() || mostRecentCardBuilt.getColorOfCost() == c.getColor2()))
                     activatableCards.add(c);
         }
+        if (builtFromArchive)
+        {
+            activatableCards = allPlayerCards.stream().filter(c -> c.getType().equals(GizmoType.BUILD)).collect(Collectors.toCollection(HashSet::new));
+            activatableCards.removeIf(GizmoCard::isTriggered);
+            activatableCards.removeIf(c -> c.getLevel().equals(GizmoLevel.LEVEL0));
+        }
+
 
         return activatableCards;
     }
