@@ -60,7 +60,7 @@ public class GamePanel extends JPanel implements MouseListener {
     private boolean archiveSectionClickable, convertSectionClickable, fileSectionClickable, pickSectionClickable, buildSectionClickable, researchingCardsClickable, first6Clickable;
     private boolean tier1SectionClickable, tier2SectionClickable, tier3SectionClickable, first6MarbleClickable, tier1CoverClicked, tier2CoverClicked, tier3CoverClicked;
     private boolean tier1CoverClickable, tier2CoverClickable, tier3CoverClickable, drawTier1Cards, drawTier2Cards, drawTier3Cards, drawResearchingCards, pickColorToResearchClicked;
-    private boolean gameEnd, gameStart, chainReactionStart, chainReactionCardClicked, chainReactionCardsVisible, filed, built, picked, builtFromArchive;
+    private boolean gameEnd, gameStart, chainReactionStart, chainReactionCardClicked, chainReactionCardsVisible, filed, built, picked, builtFromArchive, firstTimeFiling;
     private TreeMap<String, int[]> generalSectionCoord;
     private int displayPromptChoice, tierCardClickedIndex;
     public GamePanel() {
@@ -102,7 +102,7 @@ public class GamePanel extends JPanel implements MouseListener {
         generalSectionCoord = new TreeMap<String, int[]>();
         initializeAllSectionCoord(generalSectionCoord);
 
-        initializePlayer();
+//        initializePlayer();
 
     }
 
@@ -210,6 +210,7 @@ public class GamePanel extends JPanel implements MouseListener {
         built = false;
         picked = false;
         builtFromArchive = false;
+        firstTimeFiling = false;
         for (int i = 0; i < currentPlayer.getToolBar().getCards().get(GizmoType.UPGRADE).size(); i++)
             currentPlayer.getToolBar().getCards().get(GizmoType.UPGRADE).get(i).setTriggered(false);
         for (int i = 0; i < currentPlayer.getToolBar().getCards().get(GizmoType.CONVERTOR).size(); i++)
@@ -293,9 +294,9 @@ public class GamePanel extends JPanel implements MouseListener {
     public void initializePlayer()
     {
         try {
-            playerList.get(0).getToolBar().getCards().get(GizmoType.BUILD).add(new GizmoCard(MarbleColor.BLACK, 1, 1, GizmoType.BUILD, "buildPick1From6", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Black2Rank1.png"))), MarbleColor.BLUE, GizmoLevel.LEVEL1));
-            playerList.get(0).getToolBar().getCards().get(GizmoType.PICK).add(new GizmoCard(MarbleColor.BLACK, 1,1, GizmoType.PICK, "pickPickRandom", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Black4Rank1.png"))), MarbleColor.BLUE, GizmoLevel.LEVEL1));
-            playerList.get(0).getToolBar().getCards().get(GizmoType.BUILD).add(new GizmoCard(MarbleColor.BLACK, 5, 5, GizmoType.BUILD, "buildThisOrThatGet2VictoryPoints", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Black3Rank3.png"))), MarbleColor.RED, MarbleColor.BLUE, GizmoLevel.LEVEL3));
+            playerList.get(0).getToolBar().getCards().get(GizmoType.BUILD).add(new GizmoCard(MarbleColor.BLUE,7,7, GizmoType.BUILD, "buildThisOrThatResearch", 7, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Blue3Rank3.png"))), MarbleColor.YELLOW, MarbleColor.RED, GizmoLevel.LEVEL3));
+//            playerList.get(0).getToolBar().getCards().get(GizmoType.PICK).add(new GizmoCard(MarbleColor.BLACK, 1,1, GizmoType.PICK, "pickPickRandom", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Black4Rank1.png"))), MarbleColor.BLUE, GizmoLevel.LEVEL1));
+//            playerList.get(0).getToolBar().getCards().get(GizmoType.BUILD).add(new GizmoCard(MarbleColor.BLACK, 5, 5, GizmoType.BUILD, "buildThisOrThatGet2VictoryPoints", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Black3Rank3.png"))), MarbleColor.RED, MarbleColor.BLUE, GizmoLevel.LEVEL3));
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -336,6 +337,7 @@ public class GamePanel extends JPanel implements MouseListener {
         if (fileButtonClicked)
         {
             set4ActionsInvisible();
+            firstTimeFiling = true;
             startOfPlayerTurn = false;
             setPrompt("Please choose a card from the 3 tiers to file.");
             tier1SectionClickable = true;
@@ -542,7 +544,7 @@ public class GamePanel extends JPanel implements MouseListener {
                 yesButtonVisible = false;
                 noButtonVisible = false;
                 repaint();
-                triggeredCards = getAllTriggeredCards();
+
 
             }
         }
@@ -564,48 +566,76 @@ public class GamePanel extends JPanel implements MouseListener {
 
     }
     public void buildPick1From6(){
-        setPrompt("Pick a marble to add to your energy ring");
-        first6MarbleClickable = true;
-        repaint();
-        waitForPickMarbleClick();
-        mostRecentMarblePicked = energyDispenser.getMarbles().get(marbleClickedIndex);
-        currentPlayer.pickFrom6(marbleClickedIndex, energyDispenser.getMarbles());
-        setPrompt("You added that marble to your energy ring!");
-        picked = true;
-        repaint();
-        waitForSeconds(1);
-        cardClicked.setTriggered(true);
+        if (currentPlayer.getEnergyRing().size() < currentPlayer.getPlayerRingClass().getEnergyRingMax()) {
+            setPrompt("Pick a marble to add to your energy ring");
+            first6MarbleClickable = true;
+            repaint();
+            waitForPickMarbleClick();
+            mostRecentMarblePicked = energyDispenser.getMarbles().get(marbleClickedIndex);
+            currentPlayer.pickFrom6(marbleClickedIndex, energyDispenser.getMarbles());
+            setPrompt("You added that marble to your energy ring!");
+            picked = true;
+            repaint();
+            waitForSeconds(1);
+            cardClicked.setTriggered(true);
+        }
+        else {
+            setPrompt("You do not have enough space in your energy ring");
+            repaint();
+            waitForSeconds(1);
+        }
 
     }
     public void buildThisOrThatGet1VictoryPoint(){
         setPrompt("You earned 1 bonus victory point!");
         currentPlayer.addBonusVPTokens(new BonusVictoryPoint(1));
         repaint();
-        waitForSeconds(0.5);
+        waitForSeconds(1);
         cardClicked.setTriggered(true);
 
     }
     public void buildThisOrThatPick1From6(){
-        setPrompt("Pick a marble to add to your energy ring");
-        first6MarbleClickable = true;
-        repaint();
-        waitForPickMarbleClick();
-        currentPlayer.pickFrom6(marbleClickedIndex, energyDispenser.getMarbles());
-        setPrompt("You added that marble to your energy ring!");
-        repaint();
-        waitForSeconds(0.5);
-        cardClicked.setTriggered(true);
+        if (currentPlayer.getEnergyRing().size() < currentPlayer.getPlayerRingClass().getEnergyRingMax()) {
+            setPrompt("Pick a marble to add to your energy ring");
+            first6MarbleClickable = true;
+            repaint();
+            waitForPickMarbleClick();
+            mostRecentMarblePicked = energyDispenser.getMarbles().get(marbleClickedIndex);
+            currentPlayer.pickFrom6(marbleClickedIndex, energyDispenser.getMarbles());
+            setPrompt("You added that marble to your energy ring!");
+            picked = true;
+            repaint();
+            waitForSeconds(1);
+            cardClicked.setTriggered(true);
+        }
+        else {
+            setPrompt("You do not have enough space in your energy ring");
+            repaint();
+            waitForSeconds(1);
+        }
 
     }
     public void buildThisOrThatFile(){
-        setPrompt("Please choose a card from the 3 tiers to file.");
-        tier1SectionClickable = true;
-        tier2SectionClickable = true;
-        tier3SectionClickable = true;
-        repaint();
-        waitForFileCardChoice();
-        fileAction();
-        cardClicked.setTriggered(true);
+        if (currentPlayer.getArchive().size() < currentPlayer.getMaxArchive()) {
+            GizmoCard recentlyClicked = cardClicked;
+            setPrompt("Please choose a card from the 3 tiers to file.");
+            tier1SectionClickable = true;
+            tier2SectionClickable = true;
+            tier3SectionClickable = true;
+            tier1SectionClicked = false;
+            tier2SectionClicked = false;
+            tier3SectionClicked = false;
+            repaint();
+            cardClicked = null;
+            waitForFileCardChoice();
+            fileAction();
+            recentlyClicked.setTriggered(true);
+        }
+        else {
+            setPrompt("You do not have enough space in your archive");
+            repaint();
+            waitForSeconds(1);
+        }
 
     }
     public void buildThisOrThatGet2VictoryPoints(){
@@ -613,44 +643,82 @@ public class GamePanel extends JPanel implements MouseListener {
         currentPlayer.addBonusVPTokens(new BonusVictoryPoint(1));
         currentPlayer.addBonusVPTokens(new BonusVictoryPoint(1));
         repaint();
-        waitForSeconds(0.5);
+        waitForSeconds(1);
         cardClicked.setTriggered(true);
     }
     public void buildThisOrThatResearch(){
-        setPrompt("Please choose a card to research");
-        researchingCardsVisible = true;
-        repaint();
-        waitForResearchCardChoice();
-        researchingCardsVisible = false;
-        drawTier1Cards = false;
-        drawTier2Cards = false;
-        drawTier3Cards = false;
-        setPrompt("Do you want to File or Build that card?");
-        buildButtonVisible = false;
-        fileButtonVisible = false;
-        displayPromptChoice = 5;
-        fileButtonClicked = false;
-        buildButtonClicked = false;
-        researchButtonClicked = false;
-        pickButtonClicked = false;
-        cardClicked.setTriggered(true);
-        repaint();
-        waitFor4ActionClick();
-
-        if (fileButtonClicked)
-        {
-            set4ActionsInvisible();
-            drawResearchingCards = false;
-
+        if (currentPlayer.getArchive().size() < currentPlayer.getMaxArchive() || currentPlayer.getEnergyRing().size() < currentPlayer.getPlayerRingClass().getEnergyRingMax()) {
+            tier1CoverClickable = true;
+            tier2CoverClickable = true;
+            tier3CoverClickable = true;
+            tier1CoverClicked = false;
+            tier2CoverClicked = false;
+            tier3CoverClicked = false;
+            researchingCardsVisible = true;
+            displayPromptChoice = 4;
+            setPrompt("Choose a tier to research from");
             repaint();
-            fileAction();
-        }
-        else if (buildButtonClicked)
-        {
-            set4ActionsInvisible();
-            drawResearchingCards = false;
+            waitForResearchTierChoice();
+            if (tier1CoverClicked)
+                for (int i = 0; i < currentPlayer.getMaxResearch(); i++)
+                    currentPlayer.getCardsResearching().add(deck.getDeck1().pop());
+            if (tier2CoverClicked)
+                for (int i = 0; i < currentPlayer.getMaxResearch(); i++)
+                    currentPlayer.getCardsResearching().add(deck.getDeck2().pop());
+            if (tier3CoverClicked)
+                for (int i = 0; i < currentPlayer.getMaxResearch(); i++)
+                    currentPlayer.getCardsResearching().add(deck.getDeck3().pop());
+
+            setPrompt("Choose a card to research");
             repaint();
-            buildAction();
+            waitForResearchCardChoice();
+
+            researchingCardsVisible = false;
+            if (tier1CoverClicked)
+                for (int i = 0; i < currentPlayer.getCardsResearching().size(); i++) {
+                    if (currentPlayer.getCardsResearching().get(i) != cardClicked)
+                        deck.getDeck1().add(0, currentPlayer.getCardsResearching().get(i));
+                }
+            if (tier2CoverClicked)
+                for (int i = 0; i < currentPlayer.getCardsResearching().size(); i++) {
+                    if (currentPlayer.getCardsResearching().get(i) != cardClicked)
+                        deck.getDeck2().add(0, currentPlayer.getCardsResearching().get(i));
+                }
+            if (tier3CoverClicked)
+                for (int i = 0; i < currentPlayer.getCardsResearching().size(); i++) {
+                    if (currentPlayer.getCardsResearching().get(i) != cardClicked)
+                        deck.getDeck3().add(0, currentPlayer.getCardsResearching().get(i));
+                }
+            drawTier1Cards = false;
+            drawTier2Cards = false;
+            drawTier3Cards = false;
+
+            setPrompt("Do you want to File or Build that card?");
+            buildButtonVisible = false;
+            fileButtonVisible = false;
+            displayPromptChoice = 5;
+            fileButtonClicked = false;
+            buildButtonClicked = false;
+            researchButtonClicked = false;
+            pickButtonClicked = false;
+            repaint();
+            waitFor4ActionClick();
+
+            if (fileButtonClicked)
+            {
+                set4ActionsInvisible();
+                drawResearchingCards = false;
+
+                repaint();
+                fileAction();
+            }
+            else if (buildButtonClicked)
+            {
+                set4ActionsInvisible();
+                drawResearchingCards = false;
+                repaint();
+                buildAction();
+            }
         }
     }
     public void buildThisOrThatBuildTier1For0(){
@@ -709,15 +777,17 @@ public class GamePanel extends JPanel implements MouseListener {
             else if (tier3SectionClicked && !tier3CoverClicked)
                 deck.addCardToTier3(tierCardClickedIndex);
             repaint();
-            waitForSeconds(0.5);
-            setPrompt("Drawing random marble from dispenser...");
-            repaint();
             waitForSeconds(1);
-            currentPlayer.pickRandom(energyDispenser);
-            setPrompt("Marble Added!");
-            repaint();
-            waitForSeconds(0.7);
-
+            if (firstTimeFiling) {
+                setPrompt("Drawing random marble from dispenser...");
+                repaint();
+                waitForSeconds(1);
+                currentPlayer.pickRandom(energyDispenser);
+                setPrompt("Marble Added!");
+                repaint();
+                waitForSeconds(0.7);
+            }
+            firstTimeFiling = false;
         }
         else{
             setPrompt("You do not have enough space in your archive");
