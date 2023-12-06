@@ -337,6 +337,7 @@ public class GamePanel extends JPanel implements MouseListener {
      * runs the player's turn
      */
     public void playerTurn() {
+        mostRecentCardActivated = null;
         startOfPlayerTurn = true;
         endTurnButtonVisible = true;
         displayPromptChoice = 1;
@@ -479,6 +480,16 @@ public class GamePanel extends JPanel implements MouseListener {
                 buildAction();
             }
             chainReactionStart = true;
+        }
+        if (chainReactionStart){
+            triggeredCards = getAllTriggeredCards();
+            while (!triggeredCards.isEmpty()){
+                setPrompt("Please choose an available card to activate");
+                displayPromptChoice = 7;
+                chainReactionCardsVisible = true;
+                repaint();
+                waitForChainReactionCardChoice();
+            }
         }
 
 //        getAllTriggeredCards();
@@ -1132,9 +1143,24 @@ public class GamePanel extends JPanel implements MouseListener {
     {
         HashSet<GizmoCard> activatableCards = new HashSet<GizmoCard>();
         HashSet<GizmoCard> allPlayerCards = currentPlayer.getToolBar().getCards().values().stream().flatMap(Collection::stream).collect(Collectors.toCollection(HashSet::new));
-        if (mostRecentCardActivated == null)
-            return activatableCards;
-        if (mostRecentCardActivated == null){
+        if (mostRecentCardActivated == null) {
+            GizmoType type2 = cardClicked.getType();
+            switch (type2) {
+                case FILE -> {
+                    activatableCards = allPlayerCards.stream().filter(c -> c.getType().equals(GizmoType.FILE)).collect(Collectors.toCollection(HashSet::new));
+                    out.println(activatableCards.size());
+                }
+                case PICK -> {
+                    for (GizmoCard c : allPlayerCards)
+                        if (c.getType().equals(GizmoType.PICK) && mostRecentColorPicked == c.getColor1() || mostRecentColorPicked == c.getColor2() && !c.isTriggered())
+                            activatableCards.add(c);
+                }
+                case BUILD -> {
+                    for (GizmoCard c : allPlayerCards)
+                        if (c.getType().equals(GizmoType.BUILD) && mostRecentCardBuilt.getColorOfCost() == c.getColor1() || mostRecentCardBuilt.getColorOfCost() == c.getColor2())
+                            activatableCards.add(c);
+                }
+            }
             return activatableCards;
         }
         GizmoType type = mostRecentCardActivated.getType();
