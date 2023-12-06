@@ -81,9 +81,9 @@ public class EnergyRing
         energyRing.remove(m);
     }
 
-    public void setEnergyRing(ArrayList<Marble> list)
+    public void setEnergyRing(int x)
     {
-        energyRing = list;
+        maxEnergy = x;
     }
 
 }
