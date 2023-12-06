@@ -1267,6 +1267,13 @@ public class GamePanel extends JPanel implements MouseListener {
                 if ((c.getType().equals(GizmoType.BUILD)) && (!c.isTriggered()) && (mostRecentCardBuilt.getColorOfCost() == c.getColor1() || mostRecentCardBuilt.getColorOfCost() == c.getColor2()))
                     activatableCards.add(c);
         }
+        if (builtFromArchive)
+        {
+            activatableCards = allPlayerCards.stream().filter(c -> c.getType().equals(GizmoType.BUILD)).collect(Collectors.toCollection(HashSet::new));
+            activatableCards.removeIf(GizmoCard::isTriggered);
+            activatableCards.removeIf(c -> c.getLevel().equals(GizmoLevel.LEVEL0));
+        }
+
 
         return activatableCards;
     }
