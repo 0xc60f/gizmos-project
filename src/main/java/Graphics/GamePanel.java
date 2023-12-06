@@ -764,6 +764,27 @@ public class GamePanel extends JPanel implements MouseListener {
         cardClicked.setTriggered(true);
     }
 
+    public void buildFromFilePick2From6()
+    {
+        setPrompt("Pick a marble to add to your energy ring");
+        first6MarbleClickable = true;
+        repaint();
+        waitForPickMarbleClick();
+        currentPlayer.pickFrom6(marbleClickedIndex, energyDispenser.getMarbles());
+        setPrompt("You added that marble to your energy ring!");
+        repaint();
+        waitForSeconds(0.5);
+        setPrompt("Pick a marble to add to your energy ring");
+        first6MarbleClickable = true;
+        repaint();
+        waitForPickMarbleClick();
+        currentPlayer.pickFrom6(marbleClickedIndex, energyDispenser.getMarbles());
+        setPrompt("You added that marble to your energy ring!");
+        repaint();
+        waitForSeconds(0.5);
+        cardClicked.setTriggered(true);
+    }
+
     public void fileAction()
     {
         if (currentPlayer.getArchive().size() < currentPlayer.getMaxArchive()) {
