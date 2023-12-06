@@ -362,6 +362,7 @@ public class GamePanel extends JPanel implements MouseListener {
             tier1SectionClickable = true;
             tier2SectionClickable = true;
             tier3SectionClickable = true;
+            filed = true;
             repaint();
             waitForFileCardChoice();
             fileAction();
@@ -2370,9 +2371,9 @@ public class GamePanel extends JPanel implements MouseListener {
         int y = e.getY();
         if (x >= 566 && x <= 1052 && y >= 734 && y <= 805 && gameStart == false) {
             rulesButtonClicked = true;
+            //System.out.println("Downloading Rules");
             repaint();
             System.out.println("Downloaded Rules");
-            waitForSeconds(2);
             downloadRules();
         }
         if (x >= 514 && x <= 1086 && y >= 586 && y <= 721 && gameStart == false) {
@@ -2576,12 +2577,9 @@ public class GamePanel extends JPanel implements MouseListener {
     private void downloadRules() {
         String url = "https://cmon-files.s3.amazonaws.com/pdf/assets_item/resource/126/Rulebook_Gizmos.pdf";
         String home = System.getProperty("user.home");
-
+        System.out.println("Downloading Rules");
         try {
-            downloadUsingNIO(url, home + "/Downloads/GizmosRules.pdf");
-
-            downloadUsingStream(url, home + "/Downloads/GizmosRules.pdf");
-            Desktop.getDesktop().open(new File(home + "/Downloads/GizmosRules.pdf"));
+            java.awt.Desktop.getDesktop().browse(java.net.URI.create("https://cmon-files.s3.amazonaws.com/pdf/assets_item/resource/126/Rulebook_Gizmos.pdf"));
         } catch (IOException e) {
             e.printStackTrace();
         }
