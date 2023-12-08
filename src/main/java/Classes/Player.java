@@ -11,7 +11,7 @@ public class Player implements Comparable<Player>
     ArrayList<GizmoCard> archive;
     ArrayList<GizmoCard> cardsResearching;
     Toolbar toolbar;
-    boolean fileBlocked, researchBlocked;
+    boolean fileBlocked, researchBlocked, buildFromTier2For1Less, buildFromArchiveFor1Less, buildFromResearchFor1Less;
     int playerNumber, maxResearch, score, maxArchive, convertMethodChoice, player1Or2ConvertChoice, actionPicked;
 
     /**
