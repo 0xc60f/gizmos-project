@@ -1126,13 +1126,19 @@ public class GamePanel extends JPanel implements MouseListener {
             currentPlayer.upgrade(UpgradeType.RESEARCH, researchUpgrade);
         }
         if (effect.equals("upgradeNoFiling")){
-            currentPlayer.blockFile();
+            upgradeNoFiling();
         }
         if (effect.equals("upgradeNoResearching")){
-            currentPlayer.blockResearch();
+            upgradeNoResearching();
         }
         if (effect.equals("upgrade1LessEnergyToBuildFromFile")){
             currentPlayer.setBuildFromArchiveFor1Less(true);
+        }
+        if (effect.equals("upgrade1LessEnergyToBuildTier2")){
+            currentPlayer.setBuildFromTier2For1Less(true);
+        }
+        if (effect.equals("upgrade1LessEnergyToBuildFromResearch")){
+            currentPlayer.setBuildFromResearchFor1Less(true);
         }
 
     }
