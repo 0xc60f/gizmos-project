@@ -12,7 +12,6 @@ public class GraphicsFrame extends JFrame {
         super("Gizmos");
         setSize(WIDTH, HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
         GamePanel g = new GamePanel();
         add(g);
         setVisible(true);
