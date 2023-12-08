@@ -3,6 +3,7 @@ package Classes;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Player implements Comparable<Player>
 {
@@ -164,7 +165,7 @@ public class Player implements Comparable<Player>
         {
             int size = energyDispenser.getMarbles().size();
             Random rand = new Random();
-            int randomChoice = rand.nextInt(size);
+            int randomChoice = rand.nextInt(size - 6) + 6;
             energyRing.addMarble(energyDispenser.getMarbles().remove(randomChoice));
         }
     }
@@ -236,17 +237,18 @@ public class Player implements Comparable<Player>
     public int getScore()
     {
         int totalScore = 0;
-
-        for (int j = 0; j < toolbar.getCards().get(GizmoType.UPGRADE).size(); j++)
-            totalScore += toolbar.getCards().get(GizmoType.UPGRADE).get(j).getNumOfVictoryPts();
-        for (int j = 0; j < toolbar.getCards().get(GizmoType.CONVERTOR).size(); j++)
-            totalScore += toolbar.getCards().get(GizmoType.CONVERTOR).get(j).getNumOfVictoryPts();
-        for (int j = 0; j < toolbar.getCards().get(GizmoType.FILE).size(); j++)
-            totalScore += toolbar.getCards().get(GizmoType.FILE).get(j).getNumOfVictoryPts();
-        for (int j = 0; j < toolbar.getCards().get(GizmoType.PICK).size(); j++)
-            totalScore += toolbar.getCards().get(GizmoType.PICK).get(j).getNumOfVictoryPts();
-        for (int j = 0; j < toolbar.getCards().get(GizmoType.BUILD).size(); j++)
-            totalScore += toolbar.getCards().get(GizmoType.BUILD).get(j).getNumOfVictoryPts();
+        HashSet<GizmoCard> cards = toolbar.getCards().values().stream().flatMap(Collection::stream).collect(Collectors.toCollection(HashSet::new));
+        for (GizmoCard g: cards){
+            if (g.getEffectType().equals("upgradeVPEqualToNumOfMarbles")){
+                totalScore += energyRing.getRing().size();
+            }
+            if (g.getEffectType().equals("upgradeVPEqualToNumOfVPTokens")){
+                totalScore += getNumBonusVicPoints() / 5 + getNumBonusVicPoints() % 5;
+            }
+            else{
+                totalScore += g.getNumOfVictoryPts();
+            }
+        }
 
         return totalScore + getNumBonusVicPoints();
     }
@@ -346,6 +348,30 @@ public class Player implements Comparable<Player>
     public int getConvertMethod()
     {
         return convertMethodChoice;
+    }
+
+    public boolean isBuildFromTier2For1Less() {
+        return buildFromTier2For1Less;
+    }
+
+    public boolean isBuildFromArchiveFor1Less() {
+        return buildFromArchiveFor1Less;
+    }
+
+    public boolean isBuildFromResearchFor1Less() {
+        return buildFromResearchFor1Less;
+    }
+
+    public void setBuildFromArchiveFor1Less(boolean buildFromArchiveFor1Less) {
+        this.buildFromArchiveFor1Less = buildFromArchiveFor1Less;
+    }
+
+    public void setBuildFromTier2For1Less(boolean buildFromTier2For1Less) {
+        this.buildFromTier2For1Less = buildFromTier2For1Less;
+    }
+
+    public void setBuildFromResearchFor1Less(boolean buildFromResearchFor1Less) {
+        this.buildFromResearchFor1Less = buildFromResearchFor1Less;
     }
 
     public void setConvertMethod(int x)

@@ -857,8 +857,9 @@ public class GamePanel extends JPanel implements MouseListener {
         first6MarbleClickable = true;
         repaint();
         waitForPickMarbleClick();
-        currentPlayer.pickFrom6(marbleClickedIndex, energyDispenser.getMarbles());
+        Marble theMarble = currentPlayer.pickFrom6(marbleClickedIndex, energyDispenser.getMarbles());
         picked = true;
+        mostRecentColorPicked = theMarble.getNewColor();
         setPrompt("You added that marble to your energy ring!");
         repaint();
         waitForSeconds(0.5);
@@ -1062,6 +1063,7 @@ public class GamePanel extends JPanel implements MouseListener {
                 count++;
 
         if (count >= cost) {
+            cardBeingBuilt.setTriggered(true);
             currentPlayer.build(cardBeingBuilt, cost, colorOfMarble, energyDispenser);
             setPrompt("You built the gizmo!");
             built = true;
@@ -1122,6 +1124,15 @@ public class GamePanel extends JPanel implements MouseListener {
             index = effect.indexOf("r");
             researchUpgrade = Integer.parseInt(effect.substring(index+1, index+2));
             currentPlayer.upgrade(UpgradeType.RESEARCH, researchUpgrade);
+        }
+        if (effect.equals("upgradeNoFiling")){
+            currentPlayer.blockFile();
+        }
+        if (effect.equals("upgradeNoResearching")){
+            currentPlayer.blockResearch();
+        }
+        if (effect.equals("upgrade1LessEnergyToBuildFromFile")){
+            currentPlayer.setBuildFromArchiveFor1Less(true);
         }
 
     }
