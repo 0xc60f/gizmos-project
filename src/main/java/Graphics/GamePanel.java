@@ -513,98 +513,103 @@ public class GamePanel extends JPanel implements MouseListener {
         {
             while (!availableCards.isEmpty())
             {
-                setPrompt("Please choose an available card to activate");
-                displayPromptChoice = 7;
+                setPrompt("Please activate an available card or end your turn");
+                displayPromptChoice = 8;
                 chainReactionCardClicked = false;
+                endTurnButtonVisible = true;
                 chainReactionCardsVisible = true;
                 repaint();
-                waitForChainReactionCardChoice();
-                GizmoCard cardActivating = cardClicked;
+                waitForChainReactionOrEndChoice();
 
-                if (filed)
-                {
-                    if (cardActivating.getEffectType().equals("filePick1From6"))
-                        filePick1From6();
-                    else if (cardActivating.getEffectType().equals("filePick3Random"))
-                        filePick3Random();
-                    else if (cardActivating.getEffectType().equals("fileGet1VictoryPoint"))
-                        fileGet1VictoryPoint();
-                    else if (cardActivating.getLevel() == GizmoLevel.LEVEL0)
-                        filePick1Random();
-                    if (getAllTriggeredCards().isEmpty())
-                        filed = false;
-                }
-                else if (picked) {
-                    pickEffects();
-                    if (getAllTriggeredCards().isEmpty())
-                        picked = false;
-                }
-                else if (built)
-                {
-                    if (cardActivating.getEffectType().equals("buildGet1VictoryPoint"))
-                        buildGet1VictoryPoint();
-                    else if (cardActivating.getEffectType().equals("buildPick1From6"))
-                        buildPick1From6();
-                    else if (cardActivating.getEffectType().equals("buildThisOrThatGet2VictoryPoints"))
-                        buildThisOrThatGet2VictoryPoints();
-                    else if (cardActivating.getEffectType().equals("buildThisOrThatGet1VictoryPoint"))
-                        buildThisOrThatGet1VictoryPoint();
-                    else if (cardActivating.getEffectType().equals("buildThisOrThatResearch"))
-                        buildThisOrThatResearch();
-                    else if (cardActivating.getEffectType().equals("buildThisOrThatPick1From6"))
-                        buildThisOrThatPick1From6();
-                    else if (cardActivating.getEffectType().equals("buildTier2Pick2From6") && cardActivating.getLevel().equals(GizmoLevel.LEVEL2))
-                        buildTier2Pick2From6();
-                    else if (cardActivating.getEffectType().equals("buildThisOrThatBuildTier1For0"))
-                        buildThisOrThatBuildTier1For0();
-                    else if (cardActivating.getEffectType().equals("buildThisOrThatFile"))
-                        buildThisOrThatFile();
-
-
-                    if (builtFromArchive){
-                    if (cardActivating.getEffectType().equals("buildFromFileGet2VictoryPoints"))
-                        buildFromFileGet2VictoryPoints();
-                    else if (cardActivating.getEffectType().equals("buildFromFilePick2From6"))
-                        buildFromFilePick2From6();
-                    if (getAllTriggeredCards().isEmpty())
-                        built = false;
-                    }
-                }
-                availableCards = getAllTriggeredCards();
-                if (availableCards.isEmpty())
+                if (endTurnButtonClicked)
                     break;
+                else if (chainReactionCardClicked) {
+                    GizmoCard cardActivating = cardClicked;
 
-                chainReactionCardsVisible = false;
-                displayPromptChoice = 2;
-                setPrompt("Do you want to continue to keep activating cards?");
-                yesButtonClicked = false;
-                noButtonClicked = false;
-                yesButtonVisible = true;
-                noButtonVisible = true;
-                repaint();
-                waitForYesOrNoClick();
-                if (noButtonClicked) {
+                    if (filed) {
+                        if (cardActivating.getEffectType().equals("filePick1From6"))
+                            filePick1From6();
+                        else if (cardActivating.getEffectType().equals("filePick3Random"))
+                            filePick3Random();
+                        else if (cardActivating.getEffectType().equals("fileGet1VictoryPoint"))
+                            fileGet1VictoryPoint();
+                        else if (cardActivating.getLevel() == GizmoLevel.LEVEL0)
+                            filePick1Random();
+                        if (getAllTriggeredCards().isEmpty())
+                            filed = false;
+                    } else if (picked) {
+                        pickEffects();
+                        if (getAllTriggeredCards().isEmpty())
+                            picked = false;
+                    } else if (built) {
+                        if (cardActivating.getEffectType().equals("buildGet1VictoryPoint"))
+                            buildGet1VictoryPoint();
+                        else if (cardActivating.getEffectType().equals("buildPick1From6"))
+                            buildPick1From6();
+                        else if (cardActivating.getEffectType().equals("buildThisOrThatGet2VictoryPoints"))
+                            buildThisOrThatGet2VictoryPoints();
+                        else if (cardActivating.getEffectType().equals("buildThisOrThatGet1VictoryPoint"))
+                            buildThisOrThatGet1VictoryPoint();
+                        else if (cardActivating.getEffectType().equals("buildThisOrThatResearch"))
+                            buildThisOrThatResearch();
+                        else if (cardActivating.getEffectType().equals("buildThisOrThatPick1From6"))
+                            buildThisOrThatPick1From6();
+                        else if (cardActivating.getEffectType().equals("buildTier2Pick2From6") && cardActivating.getLevel().equals(GizmoLevel.LEVEL2))
+                            buildTier2Pick2From6();
+                        else if (cardActivating.getEffectType().equals("buildThisOrThatBuildTier1For0"))
+                            buildThisOrThatBuildTier1For0();
+                        else if (cardActivating.getEffectType().equals("buildThisOrThatFile"))
+                            buildThisOrThatFile();
+
+
+                        if (builtFromArchive) {
+                            if (cardActivating.getEffectType().equals("buildFromFileGet2VictoryPoints"))
+                                buildFromFileGet2VictoryPoints();
+                            else if (cardActivating.getEffectType().equals("buildFromFilePick2From6"))
+                                buildFromFilePick2From6();
+                            if (getAllTriggeredCards().isEmpty())
+                                built = false;
+                        }
+                    }
+                    availableCards = getAllTriggeredCards();
+                    if (availableCards.isEmpty())
+                        break;
+
+                    chainReactionCardsVisible = false;
+                    displayPromptChoice = 2;
+                    setPrompt("Do you want to continue to keep activating cards?");
+                    yesButtonClicked = false;
+                    noButtonClicked = false;
+                    yesButtonVisible = true;
+                    noButtonVisible = true;
+                    repaint();
+                    waitForYesOrNoClick();
+                    if (noButtonClicked) {
+                        noButtonClicked = false;
+                        yesButtonVisible = false;
+                        noButtonVisible = false;
+                        repaint();
+                        break;
+                    }
+                    yesButtonClicked = false;
                     noButtonClicked = false;
                     yesButtonVisible = false;
                     noButtonVisible = false;
                     repaint();
-                    break;
                 }
-                yesButtonClicked = false;
-                noButtonClicked = false;
-                yesButtonVisible = false;
-                noButtonVisible = false;
-                repaint();
-
 
             }
         }
-        setPrompt("Click the end turn button to go to the next player");
-        displayPromptChoice = 6;
+        else {
+            setPrompt("Click the end turn button to go to the next player");
+            displayPromptChoice = 6;
 //        resetVisibleFlags();
-        repaint();
-        waitForEndTurnClick();
+            repaint();
+            waitForEndTurnClick();
+            resetCardClicked();
+        }
         resetCardClicked();
+        repaint();
     }
 
 
@@ -2481,32 +2486,54 @@ public class GamePanel extends JPanel implements MouseListener {
             fileButtonVisible = false;
             buildButtonVisible = false;
         }
-        else if (displayPromptChoice == 6 && endTurnButtonVisible) {
+
+//        end turn button
+        else if ((displayPromptChoice == 6 && endTurnButtonVisible) ) {
             if (x >= generalSectionCoord.get("EndTurn")[0] && y >= generalSectionCoord.get("EndTurn")[1] && x <= generalSectionCoord.get("EndTurn")[2] && y <= generalSectionCoord.get("EndTurn")[3])
                 endTurnButtonClicked = true;
         }
 
-        // Chain reaction cards clicked
-        else if (displayPromptChoice == 7 && chainReactionCardsVisible) {
-            index = getChainReactionCardIndexClicked(x, y);
-            if (index != -100) {
-                chainReactionCardsVisible = false;
-                chainReactionCardClicked = true;
-                cardIsClicked = false;
-                cardResearching = cardClicked;
-                Iterator<GizmoCard> iter = getAllTriggeredCards().iterator();
-                int count = 0;
-                while (iter.hasNext())
-                {
-                    GizmoCard temp = iter.next();
-                    if (count == index)
-                        cardClicked = temp;
-                    count++;
+//      chain reactions clicked
+            else if (displayPromptChoice == 7 && chainReactionCardsVisible) {
+                index = getChainReactionCardIndexClicked(x, y);
+                if (index != -100) {
+                    chainReactionCardsVisible = false;
+                    chainReactionCardClicked = true;
+                    cardIsClicked = false;
+                    cardResearching = cardClicked;
+                    Iterator<GizmoCard> iter = getAllTriggeredCards().iterator();
+                    int count = 0;
+                    while (iter.hasNext()) {
+                        GizmoCard temp = iter.next();
+                        if (count == index)
+                            cardClicked = temp;
+                        count++;
+                    }
+                }
+            } else if (displayPromptChoice == 8 && endTurnButtonVisible && chainReactionCardsVisible) {
+                if (x >= generalSectionCoord.get("EndTurn")[0] && y >= generalSectionCoord.get("EndTurn")[1] && x <= generalSectionCoord.get("EndTurn")[2] && y <= generalSectionCoord.get("EndTurn")[3])
+                    endTurnButtonClicked = true;
+                    // Chain reaction cards clicked
+                else {
+                    index = getChainReactionCardIndexClicked(x, y);
+                    if (index != -100) {
+                        chainReactionCardsVisible = false;
+                        chainReactionCardClicked = true;
+                        cardIsClicked = false;
+                        cardResearching = cardClicked;
+                        Iterator<GizmoCard> iter = getAllTriggeredCards().iterator();
+                        int count = 0;
+                        while (iter.hasNext()) {
+                            GizmoCard temp = iter.next();
+                            if (count == index)
+                                cardClicked = temp;
+                            count++;
+                        }
+                    }
                 }
             }
         }
 
-    }
 
     /**
      * gets the type of convert method that converts something to any that the player chooses. Can only be 1-3
@@ -2743,6 +2770,18 @@ public class GamePanel extends JPanel implements MouseListener {
             }
         }
     }
+
+    public void waitForChainReactionOrEndChoice()
+    {
+        while (!chainReactionCardClicked && !endTurnButtonClicked) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
 
 
     private static void downloadUsingStream(String urlStr, String file) throws IOException {
