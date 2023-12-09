@@ -102,7 +102,7 @@ public class GamePanel extends JPanel implements MouseListener {
         generalSectionCoord = new TreeMap<String, int[]>();
         initializeAllSectionCoord(generalSectionCoord);
 
-//        initializePlayer();
+        initializePlayer();
 
     }
 
@@ -304,8 +304,9 @@ public class GamePanel extends JPanel implements MouseListener {
 //            playerList.get(0).getToolBar().getCards().get(GizmoType.CONVERTOR).add(new GizmoCard(MarbleColor.BLUE, 5,5, GizmoType.CONVERTOR, "convert1or2to2", 5, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Blue1Rank3.png"))), MarbleColor.BLACK, MarbleColor.RED, GizmoLevel.LEVEL3));
 //            playerList.get(0).getToolBar().getCards().get(GizmoType.BUILD).add(new GizmoCard(MarbleColor.BLUE,1,1, GizmoType.BUILD, "buildPick1From6", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Blue2Rank1.png"))), MarbleColor.YELLOW, GizmoLevel.LEVEL1));
 //            playerList.get(0).getToolBar().getCards().get(GizmoType.UPGRADE).add(new GizmoCard(MarbleColor.BLUE, 1,1, GizmoType.UPGRADE, "e2f1r2", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Blue2Rank2.png"))), GizmoLevel.LEVEL2));
-            playerList.get(0).getToolBar().getCards().get(GizmoType.BUILD).add(new GizmoCard(MarbleColor.RED, 5, 5, GizmoType.BUILD, "buildFromFileGet2VictoryPoints", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Red4Rank3.png"))), GizmoLevel.LEVEL3));
-            playerList.get(0).getArchive().add(new GizmoCard(MarbleColor.BLUE,1,1, GizmoType.FILE, "filePick1From6", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Blue3Rank1.png"))), GizmoLevel.LEVEL1));
+//            playerList.get(0).getToolBar().getCards().get(GizmoType.BUILD).add(new GizmoCard(MarbleColor.BLACK, 4,8, GizmoType.UPGRADE, "upgradeNoResearching", 6, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Black7Rank3.png"))), GizmoLevel.LEVEL3));
+            playerList.get(0).getArchive().add(new GizmoCard(MarbleColor.BLUE, 5,5, GizmoType.UPGRADE, "upgrade1LessEnergyToBuildFromResearch", 4, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Blue5Rank3.png"))), GizmoLevel.LEVEL3));
+            playerList.get(0).getArchive().add(new GizmoCard(MarbleColor.RED, 1, 1, GizmoType.BUILD, "buildGet1VictoryPoint",1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Red1Rank1.png"))), MarbleColor.YELLOW, GizmoLevel.LEVEL1));
 //            playerList.get(0).getToolBar().getCards().get(GizmoType.CONVERTOR).add(new GizmoCard(MarbleColor.BLUE,3,3, GizmoType.CONVERTOR, "convert1to2", 3, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Blue3Rank2.png"))), MarbleColor.RED, GizmoLevel.LEVEL2));
 //            playerList.get(0).getToolBar().getCards().get(GizmoType.CONVERTOR).add(new GizmoCard(MarbleColor.BLUE,1,1, GizmoType.CONVERTOR, "convert1ToAny", 1, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Blue6Rank1.png"))), MarbleColor.RED, GizmoLevel.LEVEL1));
 //            playerList.get(0).getToolBar().getCards().get(GizmoType.BUILD).add(new GizmoCard(MarbleColor.BLUE, 3,3, GizmoType.BUILD, "buildFromFilePick2From6", 2, ImageIO.read(Objects.requireNonNull(Deck.class.getResource("/Images/GizmoCardsTrimmed/Blue6Rank2.png"))), GizmoLevel.LEVEL2));
@@ -335,27 +336,13 @@ public class GamePanel extends JPanel implements MouseListener {
             throw new RuntimeException(e);
         }
         playerList.get(0).getPlayerRingClass().setEnergyRing(7);
-        playerList.get(0).getEnergyRing().add(new Marble(MarbleColor.RED));
-        playerList.get(0).getEnergyRing().add(new Marble(MarbleColor.RED));
         playerList.get(0).getEnergyRing().add(new Marble(MarbleColor.BLUE));
         playerList.get(0).getEnergyRing().add(new Marble(MarbleColor.BLUE));
-
-
-//        playerList.get(1).getPlayerRingClass().setEnergyRing(7);
-//        playerList.get(1).getEnergyRing().add(new Marble(MarbleColor.RED));
-//        playerList.get(1).getEnergyRing().add(new Marble(MarbleColor.RED));
-//        playerList.get(1).getEnergyRing().add(new Marble(MarbleColor.RED));
-//        playerList.get(1).getEnergyRing().add(new Marble(MarbleColor.BLUE));
-//        playerList.get(1).getEnergyRing().add(new Marble(MarbleColor.BLUE));
-//        playerList.get(1).getEnergyRing().add(new Marble(MarbleColor.BLUE));
-//
-//        playerList.get(2).getPlayerRingClass().setEnergyRing(7);
-//        playerList.get(2).getEnergyRing().add(new Marble(MarbleColor.RED));
-//        playerList.get(2).getEnergyRing().add(new Marble(MarbleColor.RED));
-//        playerList.get(2).getEnergyRing().add(new Marble(MarbleColor.RED));
-//        playerList.get(2).getEnergyRing().add(new Marble(MarbleColor.BLUE));
-//        playerList.get(2).getEnergyRing().add(new Marble(MarbleColor.BLUE));
-//        playerList.get(2).getEnergyRing().add(new Marble(MarbleColor.BLUE));
+        playerList.get(0).getEnergyRing().add(new Marble(MarbleColor.BLUE));
+        playerList.get(0).getEnergyRing().add(new Marble(MarbleColor.BLUE));
+        playerList.get(0).getEnergyRing().add(new Marble(MarbleColor.BLUE));
+        playerList.get(0).getEnergyRing().add(new Marble(MarbleColor.RED));
+        playerList.get(0).getEnergyRing().add(new Marble(MarbleColor.RED));
 
     }
 
@@ -576,6 +563,7 @@ public class GamePanel extends JPanel implements MouseListener {
                                 built = false;
                         }
                     }
+
                     availableCards = getAllTriggeredCards();
                     if (availableCards.isEmpty()) {
                         setPrompt("Click the end turn button to go to the next player");
@@ -630,31 +618,6 @@ public class GamePanel extends JPanel implements MouseListener {
         endTurnButtonVisible = false;
         resetCardClicked();
         repaint();
-    }
-
-    public void upgrade1LessEnergyToBuildFromFile()
-    {
-
-    }
-
-    public void upgradeNoFiling()
-    {
-        currentPlayer.blockFile();
-    }
-
-    public void upgradeNoResearching()
-    {
-        currentPlayer.blockResearch();
-    }
-
-    public void upgrade1LessEnergyToBuildTier2()
-    {
-
-    }
-
-    public void upgrade1LessEnergyToBuildFromResearch()
-    {
-
     }
 
     public void buildGet1VictoryPoint(){
@@ -1048,16 +1011,23 @@ public class GamePanel extends JPanel implements MouseListener {
             }
 
         }
-        waitForSeconds(0.5);
+//        waitForSeconds(0.5);
         yesButtonVisible = false;
         noButtonVisible = false;
         int count = 0;
         MarbleColor colorOfMarble = cardBeingBuilt.getColorOfCost();
         int cost = cardBeingBuilt.getCost();
 
-//        if (currentPlayer.isBuildFromResearchFor1Less() && researched)
-//            count++;
-//        if (c)
+        boolean checker = currentPlayer.isBuildFromResearchFor1Less();
+        if (checker && researched)
+            cost--;
+        checker = currentPlayer.isBuildFromTier2For1Less();
+        if (checker && cardBeingBuilt.getLevel() == GizmoLevel.LEVEL2)
+            cost--;
+        checker = currentPlayer.isBuildFromArchiveFor1Less();
+        if (checker && builtFromArchive)
+            cost--;
+
         for (int i = 0; i < currentPlayer.getEnergyRing().size(); i++)
             if (currentPlayer.getEnergyRing().get(i).getNewColor() == colorOfMarble)
                 count++;
@@ -1094,8 +1064,9 @@ public class GamePanel extends JPanel implements MouseListener {
                 i--;
             }
         }
-        if (cardBeingBuilt.getType() == GizmoType.UPGRADE)
+        if (cardBeingBuilt.getType() == GizmoType.UPGRADE){
             upgradeEffect(cardBeingBuilt.getEffectType());
+        }
 
         tier1SectionClickable = false;
         tier2SectionClickable = false;
@@ -1109,38 +1080,68 @@ public class GamePanel extends JPanel implements MouseListener {
         int energyRingUpgrade = 0;
         int fileUpgrade = 0;
         int researchUpgrade = 0;
-        if (effect.contains("e")) {
-            index = effect.indexOf("e");
-            String str = effect.substring(index+1, index+2);
-            energyRingUpgrade = Integer.parseInt(str);
-            currentPlayer.upgrade(UpgradeType.RING, energyRingUpgrade);
+        if (effect.substring(0, 1).equals("u")) {
+            if (effect.equals("upgradeNoFiling")) {
+                upgradeNoFiling();
+                setPrompt("You can no longer file any cards :(");
+                repaint();
+                waitForSeconds(1);
+            } else if (effect.equals("upgradeNoResearching")) {
+                upgradeNoResearching();
+                setPrompt("You can no longer research any cards :(");
+                repaint();
+                waitForSeconds(1);
+                return;
+            } else if (effect.equals("upgrade1LessEnergyToBuildFromFile")) {
+                currentPlayer.setBuildFromArchiveFor1Less(true);
+                setPrompt("You can now build cards from your archive for 1 less");
+                repaint();
+                waitForSeconds(1);
+                return;
+            } else if (effect.equals("upgrade1LessEnergyToBuildTier2")) {
+                currentPlayer.setBuildFromTier2For1Less(true);
+                setPrompt("You can now build tier2 cards for 1 less :)");
+                repaint();
+                waitForSeconds(1);
+                return;
+            } else if (effect.equals("upgrade1LessEnergyToBuildFromResearch")) {
+                currentPlayer.setBuildFromResearchFor1Less(false);
+                setPrompt("You can now build cards from your research for 1 less");
+                repaint();
+                waitForSeconds(1);
+                return;
+            }
         }
-        if (effect.contains("f")) {
-            index = effect.indexOf("f");
-            fileUpgrade = Integer.parseInt(effect.substring(index+1, index+2));
-            currentPlayer.upgrade(UpgradeType.ARCHIVE, fileUpgrade);
-        }
-        if (effect.contains("r")) {
-            index = effect.indexOf("r");
-            researchUpgrade = Integer.parseInt(effect.substring(index+1, index+2));
-            currentPlayer.upgrade(UpgradeType.RESEARCH, researchUpgrade);
-        }
-        if (effect.equals("upgradeNoFiling")){
-            upgradeNoFiling();
-        }
-        if (effect.equals("upgradeNoResearching")){
-            upgradeNoResearching();
-        }
-        if (effect.equals("upgrade1LessEnergyToBuildFromFile")){
-            currentPlayer.setBuildFromArchiveFor1Less(true);
-        }
-        if (effect.equals("upgrade1LessEnergyToBuildTier2")){
-            currentPlayer.setBuildFromTier2For1Less(true);
-        }
-        if (effect.equals("upgrade1LessEnergyToBuildFromResearch")){
-            currentPlayer.setBuildFromResearchFor1Less(true);
+        else {
+            if (effect.contains("e")) {
+                index = effect.indexOf("e");
+                String str = effect.substring(index + 1, index + 2);
+                energyRingUpgrade = Integer.parseInt(str);
+                currentPlayer.upgrade(UpgradeType.RING, energyRingUpgrade);
+            }
+            if (effect.contains("f")) {
+                index = effect.indexOf("f");
+                fileUpgrade = Integer.parseInt(effect.substring(index + 1, index + 2));
+                currentPlayer.upgrade(UpgradeType.ARCHIVE, fileUpgrade);
+            }
+            if (effect.contains("r")) {
+                index = effect.indexOf("r");
+                researchUpgrade = Integer.parseInt(effect.substring(index + 1, index + 2));
+                currentPlayer.upgrade(UpgradeType.RESEARCH, researchUpgrade);
+            }
         }
 
+
+
+    }
+
+    public void upgradeNoFiling()
+    {
+        currentPlayer.blockFile();
+    }
+    public void upgradeNoResearching()
+    {
+        currentPlayer.blockResearch();
     }
 
     public void oneColorToAny(int colorNum)
